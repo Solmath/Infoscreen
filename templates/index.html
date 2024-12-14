@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
+    
+    <title>Departures</title>
+</head>
+<body>
+    <h1>Vaihingen Bahnhof</h1>
+    <!-- <div class="row">
+        <div class="column"></div> -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>Linie</th>
+                        <th>Richtung</th>
+                        <th>Abfahrt</th>
+                        <th>Countdown</th>
+                        <th>Verspätung</th>
+                    </tr>
+                </thead>
+                <tbody id="departureTableRBody">
+                </tbody>
+            </table>
+        <!-- </div>
+        <div class="column"> -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>Linie</th>
+                        <th>Richtung</th>
+                        <th>Abfahrt</th>
+                        <th>Countdown</th>
+                        <th>Verspätung</th>
+                    </tr>
+                </thead>
+                <tbody id="departureTableHBody">
+                </tbody>
+            </table>
+        <!-- </div>
+    </div> -->
+    <script>
+        async function fetchDepartures() {
+            const response = await fetch('/departures');
+            const data = await response.json();
+            const tableRBody = document.getElementById('departureTableRBody');
+            tableRBody.innerHTML = '';
+            const tableHBody = document.getElementById('departureTableHBody');
+            tableHBody.innerHTML = '';
+
+            data.departureList.forEach(departure => {                
+                const row = document.createElement('tr');
+
+                dateTime = departure.dateTime.hour + ":" + departure.dateTime.minute.toString().padStart(2, '0')
+
+                if (departure.servingLine.realtime == "1"){
+                    if (departure.realtimeStatus == "DEPARTURE_CANCELLED"){
+                        row.style.textDecoration = 'line-through';
+                        row.style.color = 'grey';
+                    } else  if (departure.servingLine.delay != 0){
+                        realTime = departure.realDateTime.hour + ":" + departure.realDateTime.minute.toString().padStart(2, '0')
+                        // Highlight delayed departures
+                        dateTime = `<span style="color: grey; text-decoration: line-through;">${dateTime}</span> <span style="color: chocolate;">${realTime}</span>`;
+                    }
+                }
+
+                if (departure.servingLine.name == "S-Bahn") {
+                    number = `<span style="background-color: #339a31; border-radius: 50%; color: white; padding: 2px 8px;">${departure.servingLine.number}</span>`;
+                } else if (departure.servingLine.name == "Stadtbahn") {
+                    number = `<span style="background-color: #319acd; border-radius: 10%; color: white; padding: 2px 8px;">${departure.servingLine.number}</span>`;
+                } else if (departure.servingLine.name == "Bus") {
+                    number = `<span class="hex">${departure.servingLine.number}</span>`;
+                }else {
+                    number = departure.servingLine.number;
+                }
+
+                row.innerHTML = `
+                <td>${number}</td>
+                <td style="text-align: left">${departure.servingLine.direction}</td>
+                <td>${dateTime}</td>
+                <td>${departure.countdown}</td>
+                <td>${departure.servingLine.delay}</td>
+                `;
+                
+                if (departure.servingLine.liErgRiProj.direction == "R"){
+                    tableRBody.appendChild(row);
+                } else if (departure.servingLine.liErgRiProj.direction == "H"){
+                    tableHBody.appendChild(row);
+                }
+            });
+        }
+
+        // Fetch data every 2 minutes
+        setInterval(fetchDepartures, 120000);
+
+        // Initial fetch
+        fetchDepartures();
+    </script>
+
+</body>
+</html>
