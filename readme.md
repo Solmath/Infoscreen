@@ -62,3 +62,4 @@ Contributions are welcome! Please open an issue or submit a pull request for any
 - [Flask](https://flask.palletsprojects.com/)
 - [aiohttp](https://docs.aiohttp.org/)
 - [EFA API](https://www.efa.de/)
+- EFA class based on https://finalrewind.org/interblag/entry/efa-json-api/
