@@ -1,6 +1,5 @@
 from flask import Flask, jsonify, render_template
 from datetime import datetime
-
 import EFA
 
 app = Flask(__name__)

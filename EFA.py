@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
-
 import aiohttp
 import json
-
 
 class EFA:
     def __init__(self, url, proximity_search=False):
