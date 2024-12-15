@@ -6,14 +6,16 @@ services:
       context: ./services/web
       dockerfile: Dockerfile
     command: waitress-serve --call "manage:create_app"
-    expose:
-      - 8080
+    ports:
+      - 8080:8080
+    # expose:
+    #   - 8080
     env_file:
       - ./.env.dev
 
-  nginx:
-    build: ./services/nginx
-    ports:
-      - 1337:80
-    depends_on:
-      - web
+  # nginx:
+  #   build: ./services/nginx
+  #   ports:
+  #     - 1337:80
+  #   depends_on:
+  #     - web
