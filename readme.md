@@ -19,7 +19,7 @@ This application provides real-time departure information for Vaihingen Bahnhof 
 1. Clone the repository:
     ```bash
     git clone https://github.com/yourusername/efa-departures.git
-    cd efa-departures
+    cd efa-departures/services/web
     ```
 
 2. Create a virtual environment and activate it:
@@ -37,7 +37,7 @@ This application provides real-time departure information for Vaihingen Bahnhof 
 
 1. Run the Flask application:
     ```bash
-    python webserver.py
+    python -m flask --app project/__init__.py run # or just flask --app project/__init__.py run
     ```
 
 2. Open your web browser and navigate to `http://127.0.0.1:5000` to view the departure information.

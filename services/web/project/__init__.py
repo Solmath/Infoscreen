@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, render_template
 from datetime import datetime
-import EFA
+from EFA_API import EFA
 
 app = Flask(__name__)
 
@@ -11,7 +11,7 @@ def home():
 @app.route('/departures')
 async def departures():
     now = datetime.now()
-    efa = EFA.EFA("https://efa.vvs.de/vvs/")
+    efa = EFA("https://efa.vvs.de/vvs/")
     departures = await efa.get_departures("Stuttgart", "Vaihingen", now)
     return jsonify(departures)
 
