@@ -16,3 +16,7 @@ RUN pip install waitress
 
 # copy project
 COPY . /usr/src/app/
+
+# lint
+RUN pip install flake8
+RUN flake8 --ignore=E501,F401 

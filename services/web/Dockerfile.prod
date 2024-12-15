@@ -18,9 +18,9 @@ RUN apt-get update && \
 
 # lint
 RUN pip install --upgrade pip
-# RUN pip install flake8==7.1.1
+RUN pip install flake8==7.1.1
 COPY . /usr/src/app/
-# RUN flake8 --ignore=E501,F401 .
+RUN flake8 --ignore=E501,F401 .
 
 # install python dependencies
 COPY ./requirements.txt .
@@ -47,10 +47,11 @@ RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
 
 # install dependencies
-COPY --from=builder /usr/src/app/wheels /wheels
+# COPY --from=builder /usr/src/app/wheels /wheels
 COPY --from=builder /usr/src/app/requirements.txt .
 RUN pip install --upgrade pip
-RUN pip install --no-cache /wheels/*
+# RUN pip install --no-cache /wheels/*
+RUN pip install --no-cache -r requirements.txt
 RUN pip install waitress
 
 # copy project
