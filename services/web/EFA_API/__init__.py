@@ -2,6 +2,7 @@
 import aiohttp
 import json
 
+
 class EFA:
     def __init__(self, url, proximity_search=False):
         self.dm_url = url + "/XML_DM_REQUEST"
@@ -38,4 +39,3 @@ class EFA:
                 # EFA may return JSON with a text/html Content-Type, which response.json() does not like.
                 departures = json.loads(await response.text())
         return departures
-    

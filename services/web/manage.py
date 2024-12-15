@@ -5,8 +5,10 @@ from project import app
 
 cli = FlaskGroup(app)
 
+
 def create_app():
-   return app
+    return app
+
 
 if __name__ == "__main__":
     cli()

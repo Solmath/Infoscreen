@@ -5,9 +5,11 @@ from EFA_API import EFA
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def home():
-   return render_template('index.html')
+    return render_template('index.html')
+
 
 @app.route('/departures')
 async def departures():
