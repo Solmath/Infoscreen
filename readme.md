@@ -54,20 +54,21 @@ This application provides real-time departure information for public transport s
 ## Docker
 
 Start server:
-    ```bash
-    docker-compose build
-    docker-compose up -d 
-    ```
+
+ ```bash
+docker-compose build
+docker-compose up -d 
+```
 
 Rebuild
-    ```bash
-    docker-compose up -d --build
-    ```
+```bash
+docker-compose up -d --build
+```
 
 Stop containers:
-    ```bash
-    docker-compose down -v
-    ```
+```bash
+docker-compose down -v
+```
 
 ## Project Structure
 
