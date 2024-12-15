@@ -18,7 +18,6 @@
                         <th>Richtung</th>
                         <th>Abfahrt</th>
                         <th>Countdown</th>
-                        <th>Verspätung</th>
                     </tr>
                 </thead>
                 <tbody id="departureTableRBody">
@@ -33,7 +32,6 @@
                         <th>Richtung</th>
                         <th>Abfahrt</th>
                         <th>Countdown</th>
-                        <th>Verspätung</th>
                     </tr>
                 </thead>
                 <tbody id="departureTableHBody">
@@ -60,16 +58,23 @@
                         row.style.textDecoration = 'line-through';
                         row.style.color = 'grey';
                     } else  if (departure.servingLine.delay != 0){
+                        // Somehow in JS comparing a string with a number works...
+                        if (departure.servingLine.delay > 0){
+                            delay = "+" + departure.servingLine.delay;
+                        } else {
+                            delay = departure.servingLine.delay;
+                        }
                         realTime = departure.realDateTime.hour + ":" + departure.realDateTime.minute.toString().padStart(2, '0')
+                        
                         // Highlight delayed departures
-                        dateTime = `<span style="color: grey; text-decoration: line-through;">${dateTime}</span> <span style="color: chocolate;">${realTime}</span>`;
+                        dateTime = `<span style="color: grey; text-decoration: line-through;">${dateTime}</span> <span style="color: chocolate;">${realTime} (${delay})</span>`;
                     }
                 }
 
                 if (departure.servingLine.name == "S-Bahn") {
-                    number = `<span style="background-color: #339a31; border-radius: 50%; color: white; padding: 2px 8px;">${departure.servingLine.number}</span>`;
+                    number = `<span class="S-Bahn">${departure.servingLine.number}</span>`;
                 } else if (departure.servingLine.name == "Stadtbahn") {
-                    number = `<span style="background-color: #319acd; border-radius: 10%; color: white; padding: 2px 8px;">${departure.servingLine.number}</span>`;
+                    number = `<span class="Stadtbahn">${departure.servingLine.number}</span>`;
                 } else if (departure.servingLine.name == "Bus") {
                     number = `<span class="hex">${departure.servingLine.number}</span>`;
                 }else {
@@ -81,7 +86,6 @@
                 <td style="text-align: left">${departure.servingLine.direction}</td>
                 <td>${dateTime}</td>
                 <td>${departure.countdown}</td>
-                <td>${departure.servingLine.delay}</td>
                 `;
                 
                 if (departure.servingLine.liErgRiProj.direction == "R"){
