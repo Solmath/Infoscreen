@@ -3,10 +3,8 @@ version: '3.8'
 services:
   web:
     build: ./services/web
-    command: flask run -h 0.0.0.0
-    volumes:
-      - ./services/web/:/usr/src/app/
+    command: waitress-serve --call "manage:create_app"
     ports:
-      - 5001:5000
+      - 8080:8080
     env_file:
       - ./.env.dev
