@@ -1,6 +1,6 @@
 # EFA Departures Application
 
-This application provides real-time departure information for Vaihingen Bahnhof using the EFA (Elektronische Fahrplanauskunft) API. It is built with Flask for the backend and vanilla JavaScript for the frontend.
+This application provides real-time departure information for public transport stations using the EFA (Elektronische Fahrplanauskunft) API. It is built with Flask for the backend and vanilla JavaScript for the frontend.
 
 ## Features
 
@@ -25,7 +25,7 @@ This application provides real-time departure information for Vaihingen Bahnhof 
 2. Create a virtual environment and activate it:
     ```bash
     python -m venv .venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+    source venv\Scripts\activate  # `venv/bin/activate` on Linux
     ```
 
 3. Install the required packages:
@@ -35,19 +35,45 @@ This application provides real-time departure information for Vaihingen Bahnhof 
 
 ## Usage
 
-1. Run the Flask application:
+1. Change the URL for the EFA interface of your public transport operator and station of your choice in `web/project/__init__.py`.
+
+2. Run the Flask application:
+    a. Passing the app as an argument
     ```bash
-    python -m flask --app project/__init__.py run # or just flask --app project/__init__.py run
+    flask --app project/__init__.py run # identical to `python -m flask --app project/__init__.py run`
+    ```
+    b. Using environment variable
+    ```bash
+    $Env:FLASK_APP = "project/__init__.py" # `export FLASK_APP=project/__init__.py` on Linux
+    python manage.py run
     ```
 
-2. Open your web browser and navigate to `http://127.0.0.1:5000` to view the departure information.
+3. Open your web browser and navigate to `http://localhost:5000` to view the departure information.
+
+## Docker
+
+Start server:
+    ```bash
+    docker-compose build
+    docker-compose up -d 
+    ```
+
+Rebuild
+    ```bash
+    docker-compose up -d --build
+    ```
+
+Stop containers:
+    ```bash
+    docker-compose down -v
+    ```
 
 ## Project Structure
 
-- `webserver.py`: The main Flask application file.
-- `efa.py`: Contains the EFA class for interacting with the EFA API.
-- `templates/index.html`: The HTML template for displaying departure information.
-- `static/styles/style.css`: The CSS file for styling the HTML template.
+- `web/EFS_API/__init__.py`: Contains the EFA class for interacting with the EFA API.
+- `web/project/__init__.py`: The main Flask application file.
+- `web/project/templates/index.html`: The HTML template for displaying departure information.
+- `web/project/static/styles/style.css`: The CSS file for styling the HTML template.
 
 ## License
 

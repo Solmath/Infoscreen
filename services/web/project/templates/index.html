@@ -43,8 +43,10 @@
         async function fetchDepartures() {
             const response = await fetch('/departures');
             const data = await response.json();
+
             const tableRBody = document.getElementById('departureTableRBody');
             tableRBody.innerHTML = '';
+            
             const tableHBody = document.getElementById('departureTableHBody');
             tableHBody.innerHTML = '';
 
