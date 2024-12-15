@@ -25,7 +25,7 @@ This application provides real-time departure information for public transport s
 2. Create a virtual environment and activate it:
     ```bash
     python -m venv .venv
-    source venv\Scripts\activate  # `venv/bin/activate` on Linux
+    venv\Scripts\activate  # `venv/bin/activate` on Linux
     ```
 
 3. Install the required packages:
@@ -38,6 +38,7 @@ This application provides real-time departure information for public transport s
 1. Change the URL for the EFA interface of your public transport operator and station of your choice in `web/project/__init__.py`.
 
 2. Run the Flask application:
+
     a. Passing the app as an argument
     ```bash
     flask --app project/__init__.py run # identical to `python -m flask --app project/__init__.py run`
