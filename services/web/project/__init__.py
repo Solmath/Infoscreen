@@ -14,7 +14,6 @@ def home():
 @app.route('/departures')
 async def departures():
     now = datetime.now(ZoneInfo("Europe/Berlin"))
-    # dt = datetime(2020, 10, 31, 12, tzinfo=ZoneInfo("Europe/Berlin"))
     efa = EFA("https://efa.vvs.de/vvs/")
     departures = await efa.get_departures("Stuttgart", "Vaihingen", now)
     return jsonify(departures)
