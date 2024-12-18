@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Departures{% endblock %}</h1>
+  <h2>Vaihingen Bahnhof</h2>
+{% endblock %}
+
+{% block content %}
+<div id="departure_table">
+    {% include "departure_table.html" %}
+</div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        async function fetchDepartures() {
+            const departure_table_url = "{{ url_for('departure.departure_table')|tojson }}"
+            const departure_table_div = getElementById("departure_table")
+            
+            await fetch(departure_table_url)
+                .then(response => response.text)
+                .then(text => departure_table_div.innerHTML = text);
+        }
+
+        // Fetch data every 2 minutes
+        setInterval(fetchDepartures, 120000);
+        
+        // Initial fetch
+        fetchDepartures();
+    </script>
+{% endblock %}
