@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, render_template
+    Blueprint, render_template, request
 )
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -18,7 +18,10 @@ def departure():
 async def departure_table():
     now = datetime.now(ZoneInfo("Europe/Berlin"))
     efa = EFA("https://efa.vvs.de/vvs/")
-    departures = await efa.get_departures("Stuttgart", "Vaihingen", now)
+    
+    station = request.args.get('station', 'Vaihingen')
+    
+    departures = await efa.get_departures("Stuttgart", station, now)
 
     rowsH = []
     rowsR = []
