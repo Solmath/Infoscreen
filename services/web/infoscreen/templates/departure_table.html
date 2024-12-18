@@ -2,37 +2,69 @@
     <thead>
         <tr>
             <th>Linie</th>
-            <th>Richtung</th>
+            <th style="text-align: left">Richtung</th>
             <th>Abfahrt</th>
             <th>Countdown</th>
         </tr>
     </thead>
     <tbody id="departureTableRBody">
-    {% if rows %}
-    {% for row in rows %}
-    <tr>
-        <td>{{ row.number }}</td>
-        <td style="text-align: left">{{ row.direction }}</td>
-        <td>{{ row.dateTime }}</td>
-        <td>{{ row.countdown }}</td>
-    </tr>
-    {% endfor %}
-    {% else %}
-    <tr>
-        <td colspan="4">No departures available</td>
-    </tr>
-    {% endif %}
+        {% if rows %}
+        {% for row in rows %}
+        {% if row.direction == "R" %}
+        <tr {% if row.cancelled %}style="text-decoration: line-through; color: grey;"{% endif %}>
+            <td>{{ row.number }}</td>
+            <td style="text-align: left">{{ row.destination }}</td>
+            <td>
+                {% if row.delay|int == 0 %}
+                    {{ row.dateTime }}
+                {% else %}
+                    <span style="color: grey; text-decoration: line-through;">{{ row.dateTime }}</span> 
+                    <span style="color: chocolate;">{{ row.realTime }} ({{ row.delay }})</span>
+                {% endif %}
+            </td>
+            <td>{{ row.countdown }}</td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="4">No departures available</td>
+        </tr>
+        {% endif %}
     </tbody>
 </table>
 <table>
     <thead>
         <tr>
             <th>Linie</th>
-            <th>Richtung</th>
+            <th style="text-align: left">Richtung</th>
             <th>Abfahrt</th>
             <th>Countdown</th>
         </tr>
     </thead>
     <tbody id="departureTableHBody">
+        {% if rows %}
+        {% for row in rows %}
+        {% if row.direction == "H" %}
+        <tr {% if row.cancelled %}style="text-decoration: line-through; color: grey;"{% endif %}>
+            <td>{{ row.number }}</td>
+            <td style="text-align: left">{{ row.destination }}</td>
+            <td>
+                {% if row.delay|int == 0 %}
+                    {{ row.dateTime }}
+                {% else %}
+                    <span style="color: grey; text-decoration: line-through;">{{ row.dateTime }}</span> 
+                    <span style="color: chocolate;">{{ row.realTime }} ({{ row.delay }})</span>
+                {% endif %}
+            </td>
+            <td>{{ row.countdown }}</td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="4">No departures available</td>
+        </tr>
+        {% endif %}
     </tbody>
 </table>
