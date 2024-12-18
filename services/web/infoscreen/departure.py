@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, render_template, request
+    Blueprint, render_template
 )
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -20,9 +20,8 @@ async def departure_table():
     efa = EFA("https://efa.vvs.de/vvs/")
     departures = await efa.get_departures("Stuttgart", "Vaihingen", now)
 
-    table_id = request.args.get('table_id')
-
-    rows = []
+    rowsH = []
+    rowsR = []
     for departure in departures.get("departureList", []):
         servingLine = departure["servingLine"]
 
@@ -57,7 +56,9 @@ async def departure_table():
             "countdown": departure["countdown"]
         }
 
-        if servingLine["liErgRiProj"]["direction"] == table_id:
-            rows.append(row)
+        if servingLine["liErgRiProj"]["direction"] == 'R':
+            rowsR.append(row)
+        elif servingLine["liErgRiProj"]["direction"] == 'H':
+            rowsH.append(row)
 
-    return render_template('departure_table.html', rows=rows, table_id=table_id)
+    return render_template('departure_tables.html', rowsR=rowsR, rowsH=rowsH)
