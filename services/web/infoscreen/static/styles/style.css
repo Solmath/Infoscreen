@@ -4,17 +4,6 @@
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
-.row {
-    display: flex;
-    margin-left: -5px;
-    margin-right: -5px;
-}
-
-.column {
-    flex: 50%;
-    padding: 5px;
-}
-
 .S-Bahn, .Stadtbahn {
     color: white;
     padding: 2px 8px;
@@ -31,7 +20,6 @@
     border-radius: 10%;
 }
     
-
 table {
     border-collapse: collapse;
     border-spacing: 0;

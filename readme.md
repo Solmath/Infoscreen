@@ -41,11 +41,11 @@ This application provides real-time departure information for public transport s
 
     a. Passing the app as an argument
     ```bash
-    flask --app project/__init__.py run # identical to `python -m flask --app project/__init__.py run`
+    flask --app infoscreen run --debug # identical to `python -m flask --app infoscreen run --debug`
     ```
     b. Using environment variable
     ```bash
-    $Env:FLASK_APP = "project/__init__.py" # `export FLASK_APP=project/__init__.py` on Linux
+    $Env:FLASK_APP = "infoscreen" # `export FLASK_APP=project/__init__.py` on Linux
     python manage.py run
     ```
 
