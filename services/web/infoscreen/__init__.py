@@ -27,23 +27,19 @@ def create_app(test_config=None):
     @app.route('/hello')
     def hello():
         return 'Hello, World!'
-    
+
     @app.route('/')
     def home():
         return render_template('index.html')
-    
-    @app.route('/test')
-    def test():
-        return render_template('departure.html')
 
-    @app.route('/departures')
-    async def departures():
+    @app.route('/json')
+    async def get_json():
         now = datetime.now(ZoneInfo("Europe/Berlin"))
         efa = EFA("https://efa.vvs.de/vvs/")
         departures = await efa.get_departures("Stuttgart", "Vaihingen", now)
         return jsonify(departures)
-    
+
     from . import departure
     app.register_blueprint(departure.bp)
-        
+
     return app
