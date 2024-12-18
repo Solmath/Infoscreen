@@ -18,9 +18,9 @@ def departure():
 async def departure_table():
     now = datetime.now(ZoneInfo("Europe/Berlin"))
     efa = EFA("https://efa.vvs.de/vvs/")
-    
+
     station = request.args.get('station', 'Vaihingen')
-    
+
     departures = await efa.get_departures("Stuttgart", station, now)
 
     rowsH = []
