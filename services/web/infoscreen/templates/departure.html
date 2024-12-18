@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content %}
-<div id="departure_table">
+<div id="departure_tables">
     {% include "departure_table.html" %}
 </div>
 {% endblock %}
@@ -14,11 +14,11 @@
 {% block script %}
     <script>
         async function fetchDepartures() {
-            const departure_table_url = "{{ url_for('departure.departure_table')|tojson }}"
-            const departure_table_div = getElementById("departure_table")
-            
+            const departure_table_url = {{ url_for('departure.departure_table')|tojson }}
+            const departure_table_div = document.getElementById("departure_tables")
+
             await fetch(departure_table_url)
-                .then(response => response.text)
+                .then(response => response.text())
                 .then(text => departure_table_div.innerHTML = text);
         }
 

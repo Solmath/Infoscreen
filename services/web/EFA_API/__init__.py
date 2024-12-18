@@ -38,4 +38,5 @@ class EFA:
             async with session.post(self.dm_url, data=self.dm_post_data) as response:
                 # EFA may return JSON with a text/html Content-Type, which response.json() does not like.
                 departures = json.loads(await response.text())
+                
         return departures

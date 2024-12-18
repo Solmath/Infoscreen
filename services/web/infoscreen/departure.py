@@ -1,7 +1,5 @@
-import functools
-
 from flask import (
-    Blueprint, flash, g, redirect, render_template, jsonify, request, session, url_for
+    Blueprint, render_template
 )
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -15,6 +13,19 @@ async def departure_table():
     now = datetime.now(ZoneInfo("Europe/Berlin"))
     efa = EFA("https://efa.vvs.de/vvs/")
     departures = await efa.get_departures("Stuttgart", "Vaihingen", now)
-    # return jsonify(departures)
-
-    return render_template('departure_table.html')
+    
+    dateTime = departures["dateTime"]
+    dateTime = f"{dateTime["hour"]}:{str(dateTime["minute"]).zfill(2)}"       
+    
+    rows = []
+    for departure in departures.get("departureList", []):
+        row = {
+            "number": departure["servingLine"]["number"],
+            "direction": departure["servingLine"]["direction"],
+            "dateTime": dateTime,
+            "countdown": departure["countdown"]
+        }
+        rows.append(row)
+        
+    return render_template('departure_table.html', rows=rows)
+    

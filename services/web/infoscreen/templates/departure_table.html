@@ -8,6 +8,20 @@
         </tr>
     </thead>
     <tbody id="departureTableRBody">
+    {% if rows %}
+    {% for row in rows %}
+    <tr>
+        <td>{{ row.number }}</td>
+        <td style="text-align: left">{{ row.direction }}</td>
+        <td>{{ row.dateTime }}</td>
+        <td>{{ row.countdown }}</td>
+    </tr>
+    {% endfor %}
+    {% else %}
+    <tr>
+        <td colspan="4">No departures available</td>
+    </tr>
+    {% endif %}
     </tbody>
 </table>
 <table>
