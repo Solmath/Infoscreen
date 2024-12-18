@@ -1,4 +1,4 @@
-# EFA Departures Application
+# Infoscreen Application
 
 This application provides real-time departure information for public transport stations using the EFA (Elektronische Fahrplanauskunft) API. It is built with Flask for the backend and vanilla JavaScript for the frontend.
 
