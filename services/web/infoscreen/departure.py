@@ -27,15 +27,18 @@ async def departure_table():
         
         if servingLine["realtime"] == "1":
             # Todo: Check if this should be "realtimeStatus" instead of "realtimeTripStatus"
-            if departure["realtimeTripStatus"] == "DEPARTURE_CANCELLED" or departure["realtimeTripStatus"] == "TRIP_CANCELLED":
-                cancelled = True
-            elif int(servingLine["delay"]) != 0:
-                if int(servingLine["delay"]) > 0:
-                    delay = "+" + servingLine["delay"]
-                else:
-                    delay = servingLine["delay"]
-                    
-                realTime = f"{departure["realDateTime"]["hour"]}:{str(departure["realDateTime"]["minute"]).zfill(2)}"
+            if "realtimeStatus" in departure:
+                if departure["realtimeStatus"] == "DEPARTURE_CANCELLED" or departure["realtimeStatus"] == "TRIP_CANCELLED":
+                    cancelled = True
+            
+            if not cancelled:
+                if int(servingLine["delay"]) != 0:
+                    if int(servingLine["delay"]) > 0:
+                        delay = "+" + servingLine["delay"]
+                    else:
+                        delay = servingLine["delay"]
+                        
+                    realTime = f"{departure['realDateTime']['hour']}:{str(departure['realDateTime']['minute']).zfill(2)}"
                 
         row = {
             "number": servingLine["number"],
