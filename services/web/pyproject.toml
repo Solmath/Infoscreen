@@ -1,0 +1,11 @@
+[project]
+name = "infoscreen"
+version = "0.1.0"
+description = "Infoscreen for VVS departures using EFA API"
+dependencies = [
+    "flask", "aiohttp", "tzdata"
+]
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"

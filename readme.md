@@ -5,7 +5,7 @@ This application provides real-time departure information for public transport s
 ## Features
 
 - Fetches real-time departure data from the EFA API.
-- Displays departure information including line, direction, departure time, countdown, and delay.
+- Displays departure information including line, destination, departure time, countdown, and delay.
 - Updates departure information every 2 minutes.
 
 ## Requirements
@@ -18,7 +18,7 @@ This application provides real-time departure information for public transport s
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/efa-departures.git
+    git clone https://github.com/Solmath/Infoscreen.git
     cd efa-departures/services/web
     ```
 
@@ -39,17 +39,12 @@ This application provides real-time departure information for public transport s
 
 2. Run the Flask application:
 
-    a. Passing the app as an argument
+    Pass the app as an argument:
     ```bash
-    flask --app infoscreen run --debug # identical to `python -m flask --app infoscreen run --debug`
-    ```
-    b. Using environment variable
-    ```bash
-    $Env:FLASK_APP = "infoscreen" # `export FLASK_APP=project/__init__.py` on Linux
-    python manage.py run
+    flask --app infoscreen run --debug 
     ```
 
-3. Open your web browser and navigate to `http://localhost:5000` to view the departure information.
+3. Open your web browser and navigate to `http://localhost:5000/departure` to view the departure information.
 
 ## Docker
 
@@ -73,9 +68,10 @@ docker-compose down -v
 ## Project Structure
 
 - `web/EFS_API/__init__.py`: Contains the EFA class for interacting with the EFA API.
-- `web/project/__init__.py`: The main Flask application file.
-- `web/project/templates/index.html`: The HTML template for displaying departure information.
-- `web/project/static/styles/style.css`: The CSS file for styling the HTML template.
+- `web/infoscreen/__init__.py`: The main Flask application file.
+- `web/infoscreen/templates/base.html`: The HTML template for the infoscreen.
+- `web/infoscreen/templates/departure.html`: The HTML template for displaying departure information.
+- `web/infoscreen/static/styles/style.css`: The CSS file for styling the HTML template.
 
 ## License
 
