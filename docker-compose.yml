@@ -5,13 +5,26 @@ services:
     build: 
       context: ./services/web
       dockerfile: Dockerfile.prod
-    command: waitress-serve --call "manage:create_app"
+    command: waitress-serve --call "infoscreen:create_app"
+    #command: waitress-serve "manage:app"
     # ports:
     #   - 8080:8080
     expose:
       - 8080
     env_file:
       - ./.env.dev
+
+  # wiki:
+  #   build: 
+  #     context: ./services/wiki
+  #     dockerfile: Dockerfile.prod
+  #   command: waitress-serve --call "moin.app:create_app('/path/to/config/wikiconfig.py')" # equivalent to 'from moin.app import create_app; create_app('/path/to/config/wikiconfig.py')'
+  #   # ports:
+  #   #   - 8080:8080
+  #   expose:
+  #     - 8080
+  #   env_file:
+  #     - ./.env.dev
 
   nginx:
     build: ./services/nginx

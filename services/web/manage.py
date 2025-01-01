@@ -1,14 +1,9 @@
 from flask.cli import FlaskGroup
 
-from infoscreen import app
+import infoscreen
 
-
+app = infoscreen.create_app()
 cli = FlaskGroup(app)
-
-
-def create_app():
-    return app
-
 
 if __name__ == "__main__":
     cli()
