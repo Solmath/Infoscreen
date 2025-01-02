@@ -4,26 +4,20 @@ services:
       context: ./services/web
       dockerfile: Dockerfile.prod
     command: waitress-serve --url-prefix='/infoscreen' --call "infoscreen:create_app"
-    # command: waitress-serve --call "infoscreen:create_app"
-    #command: waitress-serve "manage:app"
-    # ports:
-    #   - 8080:8080
     expose:
       - 8080
     env_file:
       - ./.env.dev
 
-  # wiki:
-  #   build: 
-  #     context: ./services/wiki
-  #     dockerfile: Dockerfile
-  #   command: waitress-serve --url-prefix='/wiki' --call "moin.app:create_app('/path/to/config/wikiconfig.py')" # equivalent to 'from moin.app import create_app; create_app('/path/to/config/wikiconfig.py')'
-  #   # ports:
-  #   #   - 8080:8080
-  #   expose:
-  #     - 8080
-  #   env_file:
-  #     - ./.env.dev
+  wiki:
+    build: 
+      context: ./services/wiki
+      dockerfile: Dockerfile
+    command: waitress-serve --url-prefix='/wiki' "manage:application"
+    expose:
+      - 8080
+    env_file:
+      - ./.env.dev
 
   nginx:
     build: ./services/nginx
@@ -31,3 +25,4 @@ services:
       - 1337:80
     depends_on:
       - web
+      - wiki
