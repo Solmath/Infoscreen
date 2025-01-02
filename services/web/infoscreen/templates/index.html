@@ -41,7 +41,7 @@
         </table>
     <script>
         async function fetchDepartures() {
-            const response = await fetch('/infoscreen/json');
+            const response = await fetch({{ url_for('get_json')|tojson }});
             const data = await response.json();
 
             const tableRBody = document.getElementById('departureTableRBody');
