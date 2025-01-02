@@ -17,15 +17,16 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends gcc
 
 # lint
-RUN pip install --upgrade pip
-RUN pip install flake8==7.1.1
+RUN pip install --upgrade pip && \
+    pip install flake8==7.1.1
+
 COPY . /usr/src/app/
 RUN flake8 --ignore=E501,F401 .
 
 # install python dependencies
 COPY ./requirements.txt .
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels waitress
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt \
+    pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels waitress
 
 
 #########
@@ -49,9 +50,9 @@ WORKDIR $APP_HOME
 
 # install dependencies
 COPY --from=builder /usr/src/app/wheels /wheels
-RUN pip install --upgrade pip
-RUN pip install --no-cache /wheels/*
-RUN pip install flask[async]
+RUN pip install --upgrade pip && \
+    pip install --no-cache /wheels/* && \
+    pip install flask[async]
 
 # copy project
 COPY . $APP_HOME
