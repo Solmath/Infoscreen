@@ -27,3 +27,7 @@ RUN cd /usr/src/app/INSTANCE-DIRECTORY && \
 
 # Todo: Create initial user
 # Add logic to use existing volume or initialize new volume if none exists
+# Maybe use different entrypoints:
+# 1. Initialize new volume
+# 2. Start moin service
+# 3. Create new user
