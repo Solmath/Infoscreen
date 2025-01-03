@@ -24,3 +24,6 @@ RUN cd /usr/src/app/INSTANCE-DIRECTORY && \
     moin welcome && \
     moin load-help -n help-en && \
     moin load-help -n help-common
+
+# Todo: Create initial user
+# Add logic to use existing volume or initialize new volume if none exists
