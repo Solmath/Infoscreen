@@ -3,7 +3,7 @@ name = "infoscreen"
 version = "0.1.0"
 description = "Infoscreen for VVS departures using EFA API"
 dependencies = [
-    "flask", "aiohttp", "tzdata"
+    "flask", "aiohttp", "tzdata", "flake8", "black", "pre-commit"
 ]
 
 [build-system]
