@@ -1,62 +1,64 @@
 * {
-    box-sizing: border-box;
-    font-size: 13px;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+  box-sizing: border-box;
+  font-size: 13px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
-.S-Bahn, .Stadtbahn {
-    color: white;
-    padding: 2px 8px;
-    font-weight: bold;
+.S-Bahn,
+.Stadtbahn {
+  color: white;
+  padding: 2px 8px;
+  font-weight: bold;
 }
 
-.S-Bahn{
-    background-color: #339a31;
-    border-radius: 50%;
+.S-Bahn {
+  background-color: #339a31;
+  border-radius: 50%;
 }
 
-.Stadtbahn{
-    background-color: #319acd;
-    border-radius: 10%;
+.Stadtbahn {
+  background-color: #319acd;
+  border-radius: 10%;
 }
-    
+
 table {
-    border-collapse: collapse;
-    border-spacing: 0;
-    /* width: 100%; */
-    border: 1px solid #ddd;
-    display: inline-block;
-    vertical-align:top;
+  border-collapse: collapse;
+  border-spacing: 0;
+  /* width: 100%; */
+  border: 1px solid #ddd;
+  display: inline-block;
+  vertical-align: top;
 }
 
-th, td {
-text-align: center;
-padding: 10px;
+th,
+td {
+  text-align: center;
+  padding: 10px;
 }
 
 th {
-    background-color: #f2f2f2;
+  background-color: #f2f2f2;
 }
 
 td {
-    text-align: center;
+  text-align: center;
 }
 
 tr:nth-child(even) {
-background-color: #f2f2f2;
+  background-color: #f2f2f2;
 }
 
-.hex{
-    font-weight: bold;
+.hex {
+  font-weight: bold;
 }
 
 .hex::before {
-    content: "\2B22 ";
-    display:inline-block;
-    color: #e2001a;
-    font-size:12px;
-    -webkit-transform: rotate(-30deg);
-    -moz-transform: rotate(-30deg);
-    -o-transform: rotate(-30deg);
-    transform: rotate(-30deg);
-  }
+  content: "\2B22 ";
+  display: inline-block;
+  color: #e2001a;
+  font-size: 12px;
+  -webkit-transform: rotate(-30deg);
+  -moz-transform: rotate(-30deg);
+  -o-transform: rotate(-30deg);
+  transform: rotate(-30deg);
+}
