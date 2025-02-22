@@ -41,7 +41,7 @@ This application provides real-time departure information for public transport s
 
     Pass the app as an argument:
     ```bash
-    flask --app infoscreen run --debug 
+    flask --app infoscreen run --debug
     ```
 
 3. Open your web browser and navigate to `http://localhost:5000/departure` to view the departure information.
@@ -52,7 +52,7 @@ Start server:
 
  ```bash
 docker-compose build
-docker-compose up -d 
+docker-compose up -d
 ```
 
 Rebuild

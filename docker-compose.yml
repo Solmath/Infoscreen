@@ -1,6 +1,6 @@
 services:
   web:
-    build: 
+    build:
       context: ./services/web
       dockerfile: Dockerfile.prod
     command: waitress-serve --url-prefix='/infoscreen' --call "infoscreen:create_app"
@@ -10,7 +10,7 @@ services:
       - ./.env.dev
 
   wiki:
-    build: 
+    build:
       context: ./services/wiki
       dockerfile: Dockerfile
     command: waitress-serve --url-prefix='/wiki' "manage:application"

@@ -1,25 +1,24 @@
-from flask import (
-    Blueprint, render_template, request
-)
+from flask import Blueprint, render_template, request
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from EFA_API import EFA
+
 # from werkzeug.security import check_password_hash, generate_password_hash
 
-bp = Blueprint('departure', __name__)
+bp = Blueprint("departure", __name__)
 
 
-@bp.route('/departure')
+@bp.route("/departure")
 def departure():
-    return render_template('departure.html')
+    return render_template("departure.html")
 
 
-@bp.route('/departure_table', methods=('GET', 'POST'))
+@bp.route("/departure_table", methods=("GET", "POST"))
 async def departure_table():
     now = datetime.now(ZoneInfo("Europe/Berlin"))
     efa = EFA("https://efa.vvs.de/vvs/")
 
-    station = request.args.get('station', 'Vaihingen')
+    station = request.args.get("station", "Vaihingen")
     # Use Vaihingen as default station
 
     departures = await efa.get_departures("Stuttgart", station, now)
@@ -37,11 +36,12 @@ async def departure_table():
         delay = ""
 
         if servingLine["realtime"] == "1":
-            if "realtimeStatus" in departure:
-                if departure["realtimeStatus"] == "DEPARTURE_CANCELLED" or departure["realtimeStatus"] == "TRIP_CANCELLED":
-                    cancelled = True
-
-            if not cancelled:
+            if "realtimeStatus" in departure and (
+                departure["realtimeStatus"] == "DEPARTURE_CANCELLED"
+                or departure["realtimeStatus"] == "TRIP_CANCELLED"
+            ):
+                cancelled = True
+            else:
                 if int(servingLine["delay"]) != 0:
                     if int(servingLine["delay"]) > 0:
                         delay = "+" + servingLine["delay"]
@@ -57,12 +57,12 @@ async def departure_table():
             "realTime": realTime,
             "delay": delay,
             "cancelled": cancelled,
-            "countdown": departure["countdown"]
+            "countdown": departure["countdown"],
         }
 
-        if servingLine["liErgRiProj"]["direction"] == 'R':
+        if servingLine["liErgRiProj"]["direction"] == "R":
             rowsR.append(row)
-        elif servingLine["liErgRiProj"]["direction"] == 'H':
+        elif servingLine["liErgRiProj"]["direction"] == "H":
             rowsH.append(row)
 
-    return render_template('departure_tables.html', rowsR=rowsR, rowsH=rowsH)
+    return render_template("departure_tables.html", rowsR=rowsR, rowsH=rowsH)

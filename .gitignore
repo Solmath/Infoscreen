@@ -14,3 +14,4 @@ build/
 *.egg-info/
 
 INSTANCE-DIRECTORY/
+node_modules/

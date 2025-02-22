@@ -1,109 +1,110 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
-    
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static',filename='styles/style.css') }}"
+    />
+
     <title>Departures</title>
-</head>
-<body>
+  </head>
+  <body>
     <nav>
-        <h1>Infoscreen</h1>
-        <ul>
-            <li>First attempt with client side rendering</li>
-        </ul>
+      <h1>Infoscreen</h1>
+      <ul>
+        <li>First attempt with client side rendering</li>
+      </ul>
     </nav>
     <h1>Vaihingen Bahnhof</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>Linie</th>
-                    <th>Richtung</th>
-                    <th>Abfahrt</th>
-                    <th>Countdown</th>
-                </tr>
-            </thead>
-            <tbody id="departureTableRBody">
-            </tbody>
-        </table>
-        <table>
-            <thead>
-                <tr>
-                    <th>Linie</th>
-                    <th>Richtung</th>
-                    <th>Abfahrt</th>
-                    <th>Countdown</th>
-                </tr>
-            </thead>
-            <tbody id="departureTableHBody">
-            </tbody>
-        </table>
+    <table>
+      <thead>
+        <tr>
+          <th>Linie</th>
+          <th>Richtung</th>
+          <th>Abfahrt</th>
+          <th>Countdown</th>
+        </tr>
+      </thead>
+      <tbody id="departureTableRBody"></tbody>
+    </table>
+    <table>
+      <thead>
+        <tr>
+          <th>Linie</th>
+          <th>Richtung</th>
+          <th>Abfahrt</th>
+          <th>Countdown</th>
+        </tr>
+      </thead>
+      <tbody id="departureTableHBody"></tbody>
+    </table>
     <script>
-        async function fetchDepartures() {
-            const response = await fetch({{ url_for('get_json')|tojson }});
-            const data = await response.json();
+      async function fetchDepartures() {
+          const response = await fetch({{ url_for('get_json')|tojson }});
+          const data = await response.json();
 
-            const tableRBody = document.getElementById('departureTableRBody');
-            tableRBody.innerHTML = '';
-            
-            const tableHBody = document.getElementById('departureTableHBody');
-            tableHBody.innerHTML = '';
+          const tableRBody = document.getElementById('departureTableRBody');
+          tableRBody.innerHTML = '';
 
-            data.departureList.forEach(departure => {                
-                const row = document.createElement('tr');
+          const tableHBody = document.getElementById('departureTableHBody');
+          tableHBody.innerHTML = '';
 
-                dateTime = departure.dateTime.hour + ":" + departure.dateTime.minute.toString().padStart(2, '0')
+          data.departureList.forEach(departure => {
+              const row = document.createElement('tr');
 
-                if (departure.servingLine.realtime == "1"){
-                    if (departure.realtimeStatus == "DEPARTURE_CANCELLED" || departure.realtimeStatus == "TRIP_CANCELLED"){
-                        row.style.textDecoration = 'line-through';
-                        row.style.color = 'grey';
-                    } else  if (departure.servingLine.delay != 0){
-                        // Somehow in JS comparing a string with a number works...
-                        if (departure.servingLine.delay > 0){
-                            delay = "+" + departure.servingLine.delay;
-                        } else {
-                            delay = departure.servingLine.delay;
-                        }
-                        realTime = departure.realDateTime.hour + ":" + departure.realDateTime.minute.toString().padStart(2, '0')
-                        
-                        // Highlight delayed departures
-                        dateTime = `<span style="color: grey; text-decoration: line-through;">${dateTime}</span> <span style="color: chocolate;">${realTime} (${delay})</span>`;
-                    }
-                }
+              dateTime = departure.dateTime.hour + ":" + departure.dateTime.minute.toString().padStart(2, '0')
 
-                if (departure.servingLine.name == "S-Bahn") {
-                    number = `<span class="S-Bahn">${departure.servingLine.number}</span>`;
-                } else if (departure.servingLine.name == "Stadtbahn") {
-                    number = `<span class="Stadtbahn">${departure.servingLine.number}</span>`;
-                } else if (departure.servingLine.name == "Bus") {
-                    number = `<span class="hex">${departure.servingLine.number}</span>`;
-                }else {
-                    number = departure.servingLine.number;
-                }
+              if (departure.servingLine.realtime == "1"){
+                  if (departure.realtimeStatus == "DEPARTURE_CANCELLED" || departure.realtimeStatus == "TRIP_CANCELLED"){
+                      row.style.textDecoration = 'line-through';
+                      row.style.color = 'grey';
+                  } else  if (departure.servingLine.delay != 0){
+                      // Somehow in JS comparing a string with a number works...
+                      if (departure.servingLine.delay > 0){
+                          delay = "+" + departure.servingLine.delay;
+                      } else {
+                          delay = departure.servingLine.delay;
+                      }
+                      realTime = departure.realDateTime.hour + ":" + departure.realDateTime.minute.toString().padStart(2, '0')
 
-                row.innerHTML = `
-                <td>${number}</td>
-                <td style="text-align: left">${departure.servingLine.direction}</td>
-                <td>${dateTime}</td>
-                <td>${departure.countdown}</td>
-                `;
-                
-                if (departure.servingLine.liErgRiProj.direction == "R"){
-                    tableRBody.appendChild(row);
-                } else if (departure.servingLine.liErgRiProj.direction == "H"){
-                    tableHBody.appendChild(row);
-                }
-            });
-        }
+                      // Highlight delayed departures
+                      dateTime = `<span style="color: grey; text-decoration: line-through;">${dateTime}</span> <span style="color: chocolate;">${realTime} (${delay})</span>`;
+                  }
+              }
 
-        // Fetch data every 2 minutes
-        setInterval(fetchDepartures, 120000);
+              if (departure.servingLine.name == "S-Bahn") {
+                  number = `<span class="S-Bahn">${departure.servingLine.number}</span>`;
+              } else if (departure.servingLine.name == "Stadtbahn") {
+                  number = `<span class="Stadtbahn">${departure.servingLine.number}</span>`;
+              } else if (departure.servingLine.name == "Bus") {
+                  number = `<span class="hex">${departure.servingLine.number}</span>`;
+              }else {
+                  number = departure.servingLine.number;
+              }
 
-        // Initial fetch
-        fetchDepartures();
+              row.innerHTML = `
+              <td>${number}</td>
+              <td style="text-align: left">${departure.servingLine.direction}</td>
+              <td>${dateTime}</td>
+              <td>${departure.countdown}</td>
+              `;
+
+              if (departure.servingLine.liErgRiProj.direction == "R"){
+                  tableRBody.appendChild(row);
+              } else if (departure.servingLine.liErgRiProj.direction == "H"){
+                  tableHBody.appendChild(row);
+              }
+          });
+      }
+
+      // Fetch data every 2 minutes
+      setInterval(fetchDepartures, 120000);
+
+      // Initial fetch
+      fetchDepartures();
     </script>
-
-</body>
+  </body>
 </html>

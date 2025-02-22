@@ -1,33 +1,41 @@
-<table id=departureTable{{ table_id }}>
-    <thead>
-        <tr>
-            <th>Linie</th>
-            <th style="text-align: left">Richtung</th>
-            <th>Abfahrt</th>
-            <th>Countdown</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% if rows %}
-        {% for row in rows %}
-        <tr {% if row.cancelled %}style="text-decoration: line-through; color: grey;"{% endif %}>
-            <td>{{ row.number }}</td>
-            <td style="text-align: left">{{ row.destination }}</td>
-            <td>
-                {% if row.delay|int == 0 %}
-                    {{ row.dateTime }}
-                {% else %}
-                    <span style="color: grey; text-decoration: line-through;">{{ row.dateTime }}</span> 
-                    <span style="color: chocolate;">{{ row.realTime }} ({{ row.delay }})</span>
-                {% endif %}
-            </td>
-            <td>{{ row.countdown }}</td>
-        </tr>
-        {% endfor %}
-        {% else %}
-        <tr>
-            <td colspan="4">No departures available</td>
-        </tr>
+<table id="departureTable{{" table_id }}>
+  <thead>
+    <tr>
+      <th>Linie</th>
+      <th style="text-align: left">Richtung</th>
+      <th>Abfahrt</th>
+      <th>Countdown</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if rows %} {% for row in rows %}
+    <tr
+      {%
+      if
+      row.cancelled
+      %}style="text-decoration: line-through; color: grey;"
+      {%
+      endif
+      %}
+    >
+      <td>{{ row.number }}</td>
+      <td style="text-align: left">{{ row.destination }}</td>
+      <td>
+        {% if row.delay|int == 0 %} {{ row.dateTime }} {% else %}
+        <span style="color: grey; text-decoration: line-through"
+          >{{ row.dateTime }}</span
+        >
+        <span style="color: chocolate"
+          >{{ row.realTime }} ({{ row.delay }})</span
+        >
         {% endif %}
-    </tbody>
+      </td>
+      <td>{{ row.countdown }}</td>
+    </tr>
+    {% endfor %} {% else %}
+    <tr>
+      <td colspan="4">No departures available</td>
+    </tr>
+    {% endif %}
+  </tbody>
 </table>

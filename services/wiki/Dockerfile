@@ -13,7 +13,7 @@ COPY . /usr/src/app/
 # install dependencies
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
-    
+
 
 # Create moin instance
 # Todo: What if instance already exists?
