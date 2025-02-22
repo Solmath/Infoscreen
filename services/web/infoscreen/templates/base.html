@@ -14,16 +14,12 @@
       type="image/x-icon"
     />
     <title>{% block title %}{% endblock %} - Infoscreen</title>
+    {% block style %}{% endblock %}
   </head>
 
   <body>
     <nav>
       <h1>Infoscreen</h1>
-      <ul>
-        <li>
-          Test with server side rendering using python with Flask and Jinja
-        </li>
-      </ul>
     </nav>
     <section class="content">
       <header>{% block header %}{% endblock %}</header>

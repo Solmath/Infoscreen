@@ -38,8 +38,9 @@ def create_app(test_config=None):
         departures = await efa.get_departures("Stuttgart", "Vaihingen", now)
         return jsonify(departures)
 
-    from . import departure
+    from . import departure, cambridge
 
     app.register_blueprint(departure.bp)
+    app.register_blueprint(cambridge.bp)
 
     return app
