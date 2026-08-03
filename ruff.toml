@@ -1,6 +1,6 @@
 # Ruff configuration for the infoscreen app (services/web).
 # NOTE: paths will simplify once the src-layout PR flattens services/web/ to the repo root.
-target-version = "py311"
+target-version = "py312"
 line-length = 88
 extend-exclude = ["services/wiki"]
 
