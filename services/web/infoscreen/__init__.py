@@ -1,10 +1,7 @@
 import os
-
-from flask import Flask, jsonify, render_template
-from datetime import datetime
-from zoneinfo import ZoneInfo
-from EFA_API import EFA
 from contextlib import suppress
+
+from flask import Flask, redirect, url_for
 
 
 def create_app(test_config=None):
@@ -29,18 +26,10 @@ def create_app(test_config=None):
 
     @app.route("/")
     def home():
-        return render_template("index.html")
+        return redirect(url_for("departure.departure"))
 
-    @app.route("/json")
-    async def get_json():
-        now = datetime.now(ZoneInfo("Europe/Berlin"))
-        efa = EFA("https://efa.vvs.de/vvs/")
-        departures = await efa.get_departures("Stuttgart", "Vaihingen", now)
-        return jsonify(departures)
-
-    from . import departure, cambridge
+    from . import departure
 
     app.register_blueprint(departure.bp)
-    app.register_blueprint(cambridge.bp)
 
     return app

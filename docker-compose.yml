@@ -4,35 +4,7 @@ services:
       context: ./services/web
       dockerfile: Dockerfile.prod
     command: waitress-serve --url-prefix='/infoscreen' --call "infoscreen:create_app"
-    expose:
-      - 8080
-    env_file:
-      - ./.env.dev
-
-  wiki:
-    build:
-      context: ./services/wiki
-      dockerfile: Dockerfile
-    command: waitress-serve --url-prefix='/wiki' "manage:application"
-    volumes:
-      # - type: bind
-      #   source: ./wikiconfig.py
-      #   target: /usr/src/app/INSTANCE-DIRECTORY/wikiconfig.py
-      - type: volume
-        source: wiki-data
-        target: /usr/src/app/INSTANCE-DIRECTORY
-    expose:
-      - 8080
-    env_file:
-      - ./.env.dev
-
-  nginx:
-    build: ./services/nginx
     ports:
-      - 1337:80
-    depends_on:
-      - web
-      - wiki
-
-volumes:
-  wiki-data:
+      - "8080:8080"
+    env_file:
+      - ./.env.dev
