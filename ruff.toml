@@ -1,6 +1,0 @@
-target-version = "py312"
-line-length = 88
-
-[lint]
-select = ["E", "F", "W", "I", "B", "C4", "SIM", "UP"]
-ignore = ["E501"]
