@@ -1,9 +1,9 @@
-from flask import Blueprint, render_template, request
 from datetime import datetime
 from zoneinfo import ZoneInfo
-from EFA_API import EFA
 
-# from werkzeug.security import check_password_hash, generate_password_hash
+from flask import Blueprint, render_template, request
+
+from .efa import EFA
 
 bp = Blueprint("departure", __name__)
 
@@ -28,8 +28,8 @@ async def departure_table():
     for departure in departures.get("departureList", []):
         servingLine = departure["servingLine"]
 
-        dateTime = departure["dateTime"]
-        dateTime = f"{dateTime["hour"]}:{str(dateTime["minute"]).zfill(2)}"
+        dt = departure["dateTime"]
+        dateTime = f"{dt['hour']}:{str(dt['minute']).zfill(2)}"
 
         realTime = dateTime
         cancelled = False

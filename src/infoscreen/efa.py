@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
-import aiohttp
 import json
+
+import aiohttp
 
 
 class EFA:
@@ -33,10 +33,11 @@ class EFA:
             self.dm_post_data.pop("place_dm", None)
         else:
             self.dm_post_data.update({"place_dm": place})
-        departures = list()
-        async with aiohttp.ClientSession() as session:
-            async with session.post(self.dm_url, data=self.dm_post_data) as response:
-                # EFA may return JSON with a text/html Content-Type, which response.json() does not like.
-                departures = json.loads(await response.text())
+        async with (
+            aiohttp.ClientSession() as session,
+            session.post(self.dm_url, data=self.dm_post_data) as response,
+        ):
+            # EFA may return JSON with a text/html Content-Type, which response.json() does not like.
+            departures = json.loads(await response.text())
 
         return departures

@@ -8,7 +8,11 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["ruff", "pre-commit"]
+dev = ["ruff", "pre-commit", "pytest"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
 
 [build-system]
 requires = ["flit_core<4"]
