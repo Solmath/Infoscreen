@@ -2,10 +2,13 @@
 name = "infoscreen"
 version = "0.1.0"
 description = "Infoscreen for VVS departures using EFA API"
-requires-python = ">= 3.11,<4.0"
+requires-python = ">= 3.12,<4.0"
 dependencies = [
-    "flask[async] (>=3.1.0,<4.0.0)", "aiohttp", "tzdata", "flake8", "black", "pre-commit"
+    "flask[async] (>=3.1.0,<4.0.0)", "aiohttp", "tzdata"
 ]
+
+[dependency-groups]
+dev = ["ruff", "pre-commit"]
 
 [build-system]
 requires = ["flit_core<4"]
