@@ -3,21 +3,24 @@
 ###########
 
 FROM python:3.12.8-slim-bookworm AS builder
+COPY --from=ghcr.io/astral-sh/uv:0.12.1 /uv /usr/local/bin/uv
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV UV_LINK_MODE=copy
+ENV UV_PYTHON_DOWNLOADS=never
 
 # aiohttp ships C extensions that need a compiler to build wheels
 RUN apt-get update && \
     apt-get install -y --no-install-recommends gcc
 
-COPY pyproject.toml ./
-COPY src ./src
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-install-project --no-dev
 
-RUN pip install --upgrade pip && \
-    pip wheel --no-cache-dir --wheel-dir /usr/src/app/wheels . waitress
+COPY src ./src
+RUN uv sync --frozen --no-dev --no-editable
 
 #########
 # FINAL #
@@ -28,12 +31,10 @@ FROM python:3.12.8-slim-bookworm
 RUN addgroup --system app && adduser --system --group app
 
 ENV HOME=/home/app
-ENV APP_HOME=/home/app/web
-WORKDIR $APP_HOME
+WORKDIR /app
+ENV PATH="/app/.venv/bin:$PATH"
 
-COPY --from=builder /usr/src/app/wheels /wheels
-RUN pip install --upgrade pip && \
-    pip install --no-cache /wheels/*
+COPY --from=builder /app/.venv ./.venv
 
-RUN chown -R app:app $APP_HOME
+RUN chown -R app:app /app
 USER app
