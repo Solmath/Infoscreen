@@ -3,7 +3,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: waitress-serve --url-prefix='/infoscreen' --call "infoscreen:create_app"
     ports:
       - "8080:8080"
     env_file:

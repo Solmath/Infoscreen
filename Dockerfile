@@ -34,3 +34,10 @@ COPY --from=builder /app/.venv ./.venv
 
 RUN chown -R app:app /app
 USER app
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/healthz')" || exit 1
+
+CMD ["waitress-serve", "--listen=0.0.0.0:8080", "--call", "infoscreen:create_app"]

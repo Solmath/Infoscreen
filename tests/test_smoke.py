@@ -12,3 +12,8 @@ def test_index_redirects_to_departure(client):
 def test_departure_page_renders(client):
     resp = client.get("/departure")
     assert resp.status_code == 200
+
+
+def test_healthz(client):
+    resp = client.get("/healthz")
+    assert resp.status_code == 200
