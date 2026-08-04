@@ -38,8 +38,6 @@ Dockerfile           # multi-stage uv build; NO CMD (compose supplies the run co
   place, station names, timezone) come from environment variables via `config.py`,
   never from source. This includes test fixtures — use generic placeholders
   (`TestCity`, `Central`, `North`, `example.invalid`), not real operator/station names.
-  Verify with: `grep -ri "vvs|stuttgart|vaihingen|neckarpark|mercedes" src/ tests/ readme.md`
-  (must return zero hits).
 - `efa.py`'s HTTP client and cache are module-level singletons — keep request payloads
   built fresh per call (no shared mutable state between requests). Tests must clear
   `infoscreen.efa._cache` between runs (see `tests/conftest.py`'s autouse fixture).
