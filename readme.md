@@ -12,7 +12,7 @@ This application provides real-time departure information for public transport s
 
 - Python 3.7+
 - Flask
-- aiohttp
+- httpx
 
 ## Installation
 
@@ -84,6 +84,6 @@ Contributions are welcome! Please open an issue or submit a pull request for any
 ## Acknowledgements
 
 - [Flask](https://flask.palletsprojects.com/)
-- [aiohttp](https://docs.aiohttp.org/)
+- [httpx](https://www.python-httpx.org/)
 - [EFA API](https://www.efa.de/)
 - EFA class based on https://finalrewind.org/interblag/entry/efa-json-api/

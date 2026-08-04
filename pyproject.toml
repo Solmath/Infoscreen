@@ -4,11 +4,11 @@ version = "0.1.0"
 description = "Infoscreen for VVS departures using EFA API"
 requires-python = ">= 3.12,<4.0"
 dependencies = [
-    "flask[async] (>=3.1.0,<4.0.0)", "aiohttp", "tzdata", "waitress"
+    "flask (>=3.1.0,<4.0.0)", "httpx", "tzdata", "waitress"
 ]
 
 [dependency-groups]
-dev = ["ruff", "pre-commit", "pytest"]
+dev = ["ruff", "pre-commit", "pytest", "respx"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
