@@ -1,7 +1,7 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from flask import Blueprint, render_template, request
+from flask import Blueprint, abort, current_app, render_template, request
 
 from .efa import EFA
 
@@ -10,18 +10,22 @@ bp = Blueprint("departure", __name__)
 
 @bp.route("/departure")
 def departure():
-    return render_template("departure.html")
+    return render_template(
+        "departure.html", stations=current_app.config["EFA_STATIONS"]
+    )
 
 
 @bp.route("/departure_table", methods=("GET", "POST"))
 def departure_table():
-    now = datetime.now(ZoneInfo("Europe/Berlin"))
-    efa = EFA("https://efa.vvs.de/vvs/")
+    stations = current_app.config["EFA_STATIONS"]
+    station = request.args.get("station", stations[0])
+    if station not in stations:
+        abort(400, description=f"Unknown station: {station}")
 
-    station = request.args.get("station", "Vaihingen")
-    # Use Vaihingen as default station
+    now = datetime.now(ZoneInfo(current_app.config["EFA_TIMEZONE"]))
+    efa = EFA(current_app.config["EFA_URL"])
 
-    departures = efa.get_departures("Stuttgart", station, now)
+    departures = efa.get_departures(current_app.config["EFA_PLACE"], station, now)
 
     rowsH = []
     rowsR = []

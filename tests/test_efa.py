@@ -5,7 +5,7 @@ import respx
 
 from infoscreen.efa import EFA
 
-EFA_URL = "https://example.invalid/vvs"
+EFA_URL = "https://example.invalid/efa"
 
 
 @respx.mock
@@ -19,12 +19,12 @@ def test_get_departures_parses_json_served_as_html_content_type():
     )
 
     efa = EFA(EFA_URL)
-    result = efa.get_departures("Stuttgart", "Vaihingen", datetime(2026, 1, 1, 12, 0))
+    result = efa.get_departures("TestCity", "Central", datetime(2026, 1, 1, 12, 0))
 
     assert result == {"departureList": []}
     sent_data = route.calls.last.request.read().decode()
-    assert "place_dm=Stuttgart" in sent_data
-    assert "name_dm=Vaihingen" in sent_data
+    assert "place_dm=TestCity" in sent_data
+    assert "name_dm=Central" in sent_data
 
 
 @respx.mock
@@ -34,7 +34,7 @@ def test_get_departures_omits_place_when_none():
     )
 
     efa = EFA(EFA_URL)
-    efa.get_departures(None, "Vaihingen", datetime(2026, 1, 1, 12, 0))
+    efa.get_departures(None, "Central", datetime(2026, 1, 1, 12, 0))
 
     sent_data = route.calls.last.request.read().decode()
     assert "place_dm" not in sent_data
@@ -47,9 +47,9 @@ def test_get_departures_does_not_leak_state_between_calls():
     )
 
     efa = EFA(EFA_URL)
-    efa.get_departures("Stuttgart", "Vaihingen", datetime(2026, 1, 1, 12, 0))
-    efa.get_departures(None, "Rohr", datetime(2026, 1, 1, 12, 5))
+    efa.get_departures("TestCity", "Central", datetime(2026, 1, 1, 12, 0))
+    efa.get_departures(None, "North", datetime(2026, 1, 1, 12, 5))
 
     sent_data = respx.calls.last.request.read().decode()
     assert "place_dm" not in sent_data
-    assert "name_dm=Rohr" in sent_data
+    assert "name_dm=North" in sent_data

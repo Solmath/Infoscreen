@@ -1,7 +1,7 @@
 import httpx
 import respx
 
-EFA_DM_URL = "https://efa.vvs.de/vvs//XML_DM_REQUEST"
+EFA_DM_URL = "https://example.invalid/efa/XML_DM_REQUEST"
 
 
 def _departure(*, direction, delay="0", cancelled=False):
@@ -49,3 +49,9 @@ def test_departure_table_handles_no_departures(client):
     resp = client.get("/departure_table")
 
     assert resp.status_code == 200
+
+
+def test_departure_table_rejects_station_outside_allowlist(client):
+    resp = client.get("/departure_table?station=NotConfigured")
+
+    assert resp.status_code == 400
