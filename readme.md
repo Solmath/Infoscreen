@@ -1,77 +1,86 @@
-# Infoscreen Application
+# Infoscreen
 
-This application provides real-time departure information for public transport stations using the EFA (Elektronische Fahrplanauskunft) API. It is built with Flask for the backend and vanilla JavaScript for the frontend.
+A self-hosted departure board for EFA-based public transport APIs. Built with Flask,
+served with waitress, designed for kiosk-style displays (e.g. a wall-mounted screen
+showing upcoming departures for a set of stations).
 
 ## Features
 
-- Fetches real-time departure data from the EFA API.
-- Displays departure information including line, destination, departure time, countdown, and delay.
-- Updates departure information every 2 minutes.
+- Fetches real-time departure data from an EFA (Elektronische Fahrplanauskunft) endpoint.
+- Displays line, destination, departure time, countdown, and delay.
+- Station list, transit operator endpoint, and timezone are fully configured via
+  environment variables — no location data is baked into the code.
+- Short-lived caching and graceful degradation: if the upstream EFA endpoint is
+  slow or unavailable, the app shows a fallback message instead of erroring out.
 
 ## Requirements
 
-- Python 3.7+
-- Flask
-- httpx
+- Python 3.12+
+- [uv](https://docs.astral.sh/uv/) for dependency management
+- Docker (optional, for containerized runs)
 
-## Installation
+## Configuration
 
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/Solmath/Infoscreen.git
-    cd efa-departures/services/web
-    ```
+All configuration is via environment variables (see [.env.example](.env.example)):
 
-2. Create a virtual environment and activate it:
-    ```bash
-    python -m venv .venv
-    venv\Scripts\activate  # `venv/bin/activate` on Linux
-    ```
+| Variable        | Required | Description                                                |
+|-----------------|----------|--------------------------------------------------------------|
+| `EFA_URL`       | yes      | Base URL of your transit operator's EFA endpoint            |
+| `EFA_PLACE`     | yes      | Default place/city name passed to the EFA API                |
+| `EFA_STATIONS`  | yes      | Comma-separated list of selectable station names              |
+| `EFA_TIMEZONE`  | no       | Timezone for displayed times (default: `UTC`)                 |
+| `EFA_TIMEOUT`   | no       | HTTP timeout in seconds for EFA requests (default: `5.0`)     |
+| `EFA_CACHE_TTL` | no       | Seconds to cache EFA responses (default: `30.0`)              |
 
-3. Install the required packages:
-    ```bash
-    pip install -r requirements.txt
-    ```
+The app fails fast at startup if a required variable is missing.
 
-## Usage
+## Installation (local, without Docker)
 
-1. Change the URL for the EFA interface of your public transport operator and station of your choice in `web/project/__init__.py`.
-
-2. Run the Flask application:
-
-    Pass the app as an argument:
-    ```bash
-    flask --app infoscreen run --debug
-    ```
-
-3. Open your web browser and navigate to `http://localhost:5000/departure` to view the departure information.
+```bash
+git clone https://github.com/Solmath/Infoscreen.git
+cd Infoscreen
+uv sync
+cp .env.example .env   # git-ignored; fill in your EFA_URL / EFA_PLACE / EFA_STATIONS
+set -a; source .env; set +a
+uv run flask --app infoscreen run --debug
+```
 
 ## Docker
 
-Start server:
-
- ```bash
-docker-compose build
-docker-compose up -d
-```
-
-Rebuild
 ```bash
-docker-compose up -d --build
+docker compose up -d --build   # start / rebuild after changes
+docker compose down            # stop
 ```
 
-Stop containers:
+`docker-compose.yml` reads a git-ignored `.env` file. Run `cp .env.example .env`
+and fill it in with your real transit operator's values first.
+
+Then open `http://localhost:8080/` in a browser — it redirects to the departure board.
+
+## Testing
+
 ```bash
-docker-compose down -v
+uv run pytest
+pre-commit run --all-files
 ```
+
+Tests use [respx](https://lundberg.github.io/respx/) to mock the EFA API and never
+make real network calls.
 
 ## Project Structure
 
-- `web/EFS_API/__init__.py`: Contains the EFA class for interacting with the EFA API.
-- `web/infoscreen/__init__.py`: The main Flask application file.
-- `web/infoscreen/templates/base.html`: The HTML template for the infoscreen.
-- `web/infoscreen/templates/departure.html`: The HTML template for displaying departure information.
-- `web/infoscreen/static/styles/style.css`: The CSS file for styling the HTML template.
+```text
+src/infoscreen/
+  __init__.py             # Flask app factory
+  config.py                # environment-variable configuration loader
+  efa.py                    # EFA API client (sync httpx, TTL cache, error handling)
+  departure.py              # routes: /departure, /departure_table
+  templates/                # Jinja templates
+  static/styles/style.css   # styling
+tests/                      # pytest test suite
+Dockerfile                  # multi-stage build (uv-based)
+docker-compose.yml          # local dev/run configuration
+```
 
 ## License
 
