@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from flask import Blueprint, abort, current_app, render_template, request
@@ -6,6 +6,14 @@ from flask import Blueprint, abort, current_app, render_template, request
 from .efa import EFA, EFAError
 
 bp = Blueprint("departure", __name__)
+
+
+def _departure_ts(now, countdown):
+    # absolute timestamp lets the client tick the countdown live between polls
+    try:
+        return (now + timedelta(minutes=int(countdown))).isoformat()
+    except TypeError, ValueError:
+        return None
 
 
 @bp.route("/departure")
@@ -70,6 +78,7 @@ def departure_table():
             "delay": delay,
             "cancelled": cancelled,
             "countdown": departure["countdown"],
+            "departureTs": _departure_ts(now, departure["countdown"]),
         }
 
         if servingLine["liErgRiProj"]["direction"] == "R":
