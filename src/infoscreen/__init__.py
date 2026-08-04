@@ -31,6 +31,10 @@ def create_app(test_config=None):
     def home():
         return redirect(url_for("departure.departure"))
 
+    @app.route("/healthz")
+    def healthz():
+        return "ok"
+
     from . import departure
 
     app.register_blueprint(departure.bp)
