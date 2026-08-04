@@ -12,7 +12,7 @@ def _departure_ts(now, countdown):
     # absolute timestamp lets the client tick the countdown live between polls
     try:
         return (now + timedelta(minutes=int(countdown))).isoformat()
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         return None
 
 
