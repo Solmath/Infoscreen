@@ -15,7 +15,7 @@ showing upcoming departures for a set of stations).
 
 ## Requirements
 
-- Python 3.12+
+- Python 3.14+
 - [uv](https://docs.astral.sh/uv/) for dependency management
 - Docker (optional, for containerized runs)
 

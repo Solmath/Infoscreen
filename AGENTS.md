@@ -5,7 +5,7 @@ kiosk-style displays (e.g. a wall-mounted screen showing next departures).
 
 ## Environment
 
-- **Python**: 3.12, managed with `uv` (not pip/venv directly)
+- **Python**: 3.14, managed with `uv` (not pip/venv directly)
 - **Package layout**: `src/` layout, package is `infoscreen`
 - **Shell**: zsh
 
