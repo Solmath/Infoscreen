@@ -1,7 +1,7 @@
 [project]
 name = "infoscreen"
 version = "0.1.0"
-description = "Infoscreen for VVS departures using EFA API"
+description = "Self-hosted departure board for EFA-based public transport APIs"
 requires-python = ">= 3.12,<4.0"
 dependencies = [
     "flask (>=3.1.0,<4.0.0)", "httpx", "tzdata", "waitress"

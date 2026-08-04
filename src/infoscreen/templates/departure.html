@@ -7,12 +7,9 @@
   </ul>
   <label for="station-select">Select Station:</label>
   <select id="station-select" onchange="fetchDepartures()">
-    <option value="Vaihingen">Vaihingen</option>
-    <option value="Dürrlewang">Dürrlewang</option>
-    <option value="Rohr">Rohr</option>
-    <option value="Neckarpark">Neckarpark</option>
-    <option value="Mercedes-Benz Welt">Mercedes-Benz Welt</option>
-    <!-- Add more stations as needed -->
+    {% for station in stations %}
+    <option value="{{ station }}">{{ station }}</option>
+    {% endfor %}
   </select>
 </div>
 <div id="departure_tables">{% include 'departure_tables.html' %}</div>
