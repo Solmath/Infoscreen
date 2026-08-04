@@ -1,9 +1,11 @@
 from datetime import datetime
 
 import httpx
+import pytest
 import respx
 
-from infoscreen.efa import EFA
+from infoscreen import efa as efa_module
+from infoscreen.efa import EFA, EFAError
 
 EFA_URL = "https://example.invalid/efa"
 
@@ -53,3 +55,67 @@ def test_get_departures_does_not_leak_state_between_calls():
     sent_data = respx.calls.last.request.read().decode()
     assert "place_dm" not in sent_data
     assert "name_dm=North" in sent_data
+
+
+@respx.mock
+def test_get_departures_raises_efa_error_on_timeout():
+    respx.post(f"{EFA_URL}/XML_DM_REQUEST").mock(
+        side_effect=httpx.TimeoutException("timed out")
+    )
+
+    efa = EFA(EFA_URL, cache_ttl=0)
+
+    with pytest.raises(EFAError):
+        efa.get_departures("TestCity", "Central", datetime(2026, 1, 1, 12, 0))
+
+
+@respx.mock
+def test_get_departures_raises_efa_error_on_5xx():
+    respx.post(f"{EFA_URL}/XML_DM_REQUEST").mock(return_value=httpx.Response(503))
+
+    efa = EFA(EFA_URL, cache_ttl=0)
+
+    with pytest.raises(EFAError):
+        efa.get_departures("TestCity", "Central", datetime(2026, 1, 1, 12, 0))
+
+
+@respx.mock
+def test_get_departures_raises_efa_error_on_invalid_json():
+    respx.post(f"{EFA_URL}/XML_DM_REQUEST").mock(
+        return_value=httpx.Response(200, content=b"not json")
+    )
+
+    efa = EFA(EFA_URL, cache_ttl=0)
+
+    with pytest.raises(EFAError):
+        efa.get_departures("TestCity", "Central", datetime(2026, 1, 1, 12, 0))
+
+
+@respx.mock
+def test_get_departures_caches_within_ttl():
+    route = respx.post(f"{EFA_URL}/XML_DM_REQUEST").mock(
+        return_value=httpx.Response(200, json={"departureList": []})
+    )
+
+    efa = EFA(EFA_URL, cache_ttl=60)
+    efa.get_departures("TestCity", "Central", datetime(2026, 1, 1, 12, 0))
+    efa.get_departures("TestCity", "Central", datetime(2026, 1, 1, 12, 1))
+
+    assert route.calls.call_count == 1
+
+
+@respx.mock
+def test_get_departures_refetches_after_ttl_expires(monkeypatch):
+    route = respx.post(f"{EFA_URL}/XML_DM_REQUEST").mock(
+        return_value=httpx.Response(200, json={"departureList": []})
+    )
+
+    fake_clock = [1000.0]
+    monkeypatch.setattr(efa_module.time, "monotonic", lambda: fake_clock[0])
+
+    efa = EFA(EFA_URL, cache_ttl=30)
+    efa.get_departures("TestCity", "Central", datetime(2026, 1, 1, 12, 0))
+    fake_clock[0] += 31
+    efa.get_departures("TestCity", "Central", datetime(2026, 1, 1, 12, 1))
+
+    assert route.calls.call_count == 2
