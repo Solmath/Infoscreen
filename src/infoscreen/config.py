@@ -30,3 +30,5 @@ def init_app(app):
     app.config["EFA_STATIONS"] = stations
 
     app.config["EFA_TIMEZONE"] = os.environ.get("EFA_TIMEZONE", "UTC")
+    app.config["EFA_TIMEOUT"] = float(os.environ.get("EFA_TIMEOUT", "5"))
+    app.config["EFA_CACHE_TTL"] = float(os.environ.get("EFA_CACHE_TTL", "30"))

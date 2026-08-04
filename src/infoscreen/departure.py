@@ -3,7 +3,7 @@ from zoneinfo import ZoneInfo
 
 from flask import Blueprint, abort, current_app, render_template, request
 
-from .efa import EFA
+from .efa import EFA, EFAError
 
 bp = Blueprint("departure", __name__)
 
@@ -23,9 +23,17 @@ def departure_table():
         abort(400, description=f"Unknown station: {station}")
 
     now = datetime.now(ZoneInfo(current_app.config["EFA_TIMEZONE"]))
-    efa = EFA(current_app.config["EFA_URL"])
+    efa = EFA(
+        current_app.config["EFA_URL"],
+        timeout=current_app.config["EFA_TIMEOUT"],
+        cache_ttl=current_app.config["EFA_CACHE_TTL"],
+    )
 
-    departures = efa.get_departures(current_app.config["EFA_PLACE"], station, now)
+    try:
+        departures = efa.get_departures(current_app.config["EFA_PLACE"], station, now)
+    except EFAError:
+        current_app.logger.exception("Failed to fetch departures from EFA")
+        return render_template("departures_unavailable.html")
 
     rowsH = []
     rowsR = []
