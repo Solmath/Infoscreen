@@ -30,7 +30,7 @@
         >
         {% endif %}
       </td>
-      <td>{{ row.countdown }}</td>
+      <td{% if row.departureTs %} data-departure-ts="{{ row.departureTs }}"{% endif %}>{{ row.countdown }}</td>
     </tr>
     {% endfor %} {% else %}
     <tr>

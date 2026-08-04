@@ -9,7 +9,7 @@ def _departure(*, direction, delay="0", cancelled=False):
     return {
         "servingLine": {
             "number": "S1",
-            "direction": "Kirchheim",
+            "direction": "Downtown",
             "realtime": "1",
             "delay": delay,
             "liErgRiProj": {"direction": direction},
@@ -39,7 +39,8 @@ def test_departure_table_renders_rows_from_efa_response(client):
 
     assert resp.status_code == 200
     assert b"S1" in resp.data
-    assert b"Kirchheim" in resp.data
+    assert b"Downtown" in resp.data
+    assert b"data-departure-ts=" in resp.data
 
 
 @respx.mock
@@ -55,3 +56,11 @@ def test_departure_table_rejects_station_outside_allowlist(client):
     resp = client.get("/departure_table?station=NotConfigured")
 
     assert resp.status_code == 400
+
+
+def test_departure_page_passes_stations_to_alpine_component(client):
+    resp = client.get("/departure")
+
+    assert resp.status_code == 200
+    assert b'["Central", "North"]' in resp.data
+    assert b"alpine.min.js" in resp.data

@@ -62,3 +62,27 @@ tr:nth-child(even) {
   -o-transform: rotate(-30deg);
   transform: rotate(-30deg);
 }
+
+.poll-status {
+  position: relative;
+  margin-top: 10px;
+  width: 200px;
+  height: 18px;
+  border: 1px solid #ddd;
+  overflow: hidden;
+}
+
+.poll-status-bar {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  background-color: #f2f2f2;
+  transition: width 1s linear;
+}
+
+.poll-status span {
+  position: relative;
+  display: block;
+  text-align: center;
+  line-height: 18px;
+}
