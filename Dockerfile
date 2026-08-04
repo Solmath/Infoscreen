@@ -12,10 +12,6 @@ ENV PYTHONUNBUFFERED=1
 ENV UV_LINK_MODE=copy
 ENV UV_PYTHON_DOWNLOADS=never
 
-# aiohttp ships C extensions that need a compiler to build wheels
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc
-
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-install-project --no-dev
 
