@@ -47,6 +47,16 @@ uv run flask --app infoscreen run --debug
 
 ## Docker
 
+Pre-built images are published to
+[ghcr.io/solmath/infoscreen](https://github.com/Solmath/Infoscreen/pkgs/container/infoscreen)
+on every push to `main` (tagged `latest`) and on version tags (tagged with the semver).
+
+```bash
+docker run -d -p 8080:8080 --env-file .env ghcr.io/solmath/infoscreen:latest
+```
+
+Or build locally with Compose:
+
 ```bash
 docker compose up -d --build   # start / rebuild after changes
 docker compose down            # stop
@@ -56,6 +66,7 @@ docker compose down            # stop
 and fill it in with your real transit operator's values first.
 
 Then open `http://localhost:8080/` in a browser — it redirects to the departure board.
+The container exposes a `/healthz` liveness endpoint used by its Docker `HEALTHCHECK`.
 
 ## Testing
 
