@@ -63,12 +63,60 @@ def test_departure_table_rejects_station_outside_allowlist(client):
     assert resp.status_code == 400
 
 
+@respx.mock
+def test_departures_api_returns_flat_line_direction_minutes(client):
+    respx.post(EFA_DM_URL).mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "departureList": [
+                    _departure(direction="H"),
+                    _departure(direction="R", delay="3"),
+                ]
+            },
+        )
+    )
+
+    resp = client.get("/api/departures?station=Central")
+
+    assert resp.status_code == 200
+    body = resp.get_json()
+    assert body["departures"] == [
+        {"line": "S1", "direction": "Downtown", "minutes": 10},
+        {"line": "S1", "direction": "Downtown", "minutes": 10},
+    ]
+
+
+@respx.mock
+def test_departures_api_defaults_to_first_station_when_missing(client):
+    respx.post(EFA_DM_URL).mock(
+        return_value=httpx.Response(200, json={"departureList": []})
+    )
+
+    resp = client.get("/api/departures")
+
+    assert resp.status_code == 200
+
+
+def test_departures_api_rejects_station_outside_allowlist(client):
+    resp = client.get("/api/departures?station=NotConfigured")
+
+    assert resp.status_code == 400
+
+
 def test_departure_page_passes_stations_to_alpine_component(client):
     resp = client.get("/departure")
 
     assert resp.status_code == 200
     assert b'["Central", "North"]' in resp.data
     assert b"alpine.min.js" in resp.data
+
+
+def test_stations_api_returns_configured_stations(client):
+    resp = client.get("/api/stations")
+
+    assert resp.status_code == 200
+    assert resp.get_json() == {"stations": ["Central", "North"]}
 
 
 class _FakeDateTime(datetime):

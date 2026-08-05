@@ -1,0 +1,10 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+body {
+	background: #0b0e11;
+	color: #f5f5f5;
+	font-family: 'Helvetica Neue', Arial, sans-serif;
+	margin: 0;
+	padding: 2rem;
+}

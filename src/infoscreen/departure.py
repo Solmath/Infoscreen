@@ -23,7 +23,7 @@ def _departure_ts(now, countdown):
 def get_departures(station: str, force_refresh: bool = False):
 
     now = datetime.now(ZoneInfo(current_app.config["EFA_TIMEZONE"]))
-    entry = _cache.get(station, {"data": None, "fetched_at": None})
+    entry = _cache.setdefault(station, {"data": None, "fetched_at": None})
     is_stale = (
         entry["fetched_at"] is None
         or (now - entry["fetched_at"]).total_seconds() > CACHE_TTL_SECONDS
@@ -40,7 +40,6 @@ def get_departures(station: str, force_refresh: bool = False):
                 current_app.config["EFA_PLACE"], station, now
             )
             entry["fetched_at"] = now
-            _cache[station] = entry
         except EFAError as exc:
             current_app.logger.exception("Failed to fetch departures from EFA")
             return entry["data"] or {}, {
@@ -65,14 +64,71 @@ def departure():
     )
 
 
+@departure_bp.route("/api/stations")
+def stations_api():
+    return jsonify({"stations": current_app.config["EFA_STATIONS"]})
+
+
+def _parse_departure_row(departure, now):
+    servingLine = departure["servingLine"]
+
+    dt = departure["dateTime"]
+    dateTime = f"{dt['hour']}:{str(dt['minute']).zfill(2)}"
+
+    realTime = dateTime
+    cancelled = False
+    delay = ""
+
+    if servingLine["realtime"] == "1":
+        if "realtimeStatus" in departure and (
+            departure["realtimeStatus"] == "DEPARTURE_CANCELLED"
+            or departure["realtimeStatus"] == "TRIP_CANCELLED"
+        ):
+            cancelled = True
+        else:
+            if int(servingLine["delay"]) != 0:
+                if int(servingLine["delay"]) > 0:
+                    delay = "+" + servingLine["delay"]
+                else:
+                    delay = servingLine["delay"]
+
+                realTime = f"{departure['realDateTime']['hour']}:{str(departure['realDateTime']['minute']).zfill(2)}"
+
+    return {
+        "number": servingLine["number"],
+        "destination": servingLine["direction"],
+        "direction": servingLine["liErgRiProj"]["direction"],
+        "dateTime": dateTime,
+        "realTime": realTime,
+        "delay": delay,
+        "cancelled": cancelled,
+        "countdown": departure["countdown"],
+        "departureTs": _departure_ts(now, departure["countdown"]),
+    }
+
+
 @departure_bp.route("/api/departures")
 def departures_api():
-    station = request.args.get("station")
-    if not station:
-        return jsonify({"error": "missing 'station' query parameter"}), 400
+    stations = current_app.config["EFA_STATIONS"]
+    station = request.args.get("station", stations[0])
+    if station not in stations:
+        abort(400, description=f"Unknown station: {station}")
 
     data, meta = get_departures(station=station)
-    return jsonify({"departures": data, "meta": meta, "server_time": time.time()})
+    now = datetime.fromisoformat(meta["fetched_at"]) if meta["fetched_at"] else None
+
+    rows = [_parse_departure_row(d, now) for d in data.get("departureList", [])]
+    departures = [
+        {
+            "line": row["number"],
+            "destination": row["destination"],
+            "direction": row["direction"],
+            "minutes": int(row["countdown"]),
+        }
+        for row in rows
+    ]
+
+    return jsonify({"departures": departures, "meta": meta, "server_time": time.time()})
 
 
 @departure_bp.route("/departure_table", methods=("GET", "POST"))
@@ -85,47 +141,8 @@ def departure_table():
     departures, meta = get_departures(station=station)
     now = datetime.fromisoformat(meta["fetched_at"]) if meta["fetched_at"] else None
 
-    rowsH = []
-    rowsR = []
-    for departure in departures.get("departureList", []):
-        servingLine = departure["servingLine"]
-
-        dt = departure["dateTime"]
-        dateTime = f"{dt['hour']}:{str(dt['minute']).zfill(2)}"
-
-        realTime = dateTime
-        cancelled = False
-        delay = ""
-
-        if servingLine["realtime"] == "1":
-            if "realtimeStatus" in departure and (
-                departure["realtimeStatus"] == "DEPARTURE_CANCELLED"
-                or departure["realtimeStatus"] == "TRIP_CANCELLED"
-            ):
-                cancelled = True
-            else:
-                if int(servingLine["delay"]) != 0:
-                    if int(servingLine["delay"]) > 0:
-                        delay = "+" + servingLine["delay"]
-                    else:
-                        delay = servingLine["delay"]
-
-                    realTime = f"{departure['realDateTime']['hour']}:{str(departure['realDateTime']['minute']).zfill(2)}"
-
-        row = {
-            "number": servingLine["number"],
-            "destination": servingLine["direction"],
-            "dateTime": dateTime,
-            "realTime": realTime,
-            "delay": delay,
-            "cancelled": cancelled,
-            "countdown": departure["countdown"],
-            "departureTs": _departure_ts(now, departure["countdown"]),
-        }
-
-        if servingLine["liErgRiProj"]["direction"] == "R":
-            rowsR.append(row)
-        elif servingLine["liErgRiProj"]["direction"] == "H":
-            rowsH.append(row)
+    rows = [_parse_departure_row(d, now) for d in departures.get("departureList", [])]
+    rowsR = [row for row in rows if row["direction"] == "R"]
+    rowsH = [row for row in rows if row["direction"] == "H"]
 
     return render_template("departure_tables.html", rowsR=rowsR, rowsH=rowsH)
