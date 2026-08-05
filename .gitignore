@@ -1,5 +1,4 @@
 .venv/
-.env
 
 *.pyc
 __pycache__/
@@ -16,4 +15,13 @@ build/
 *.egg-info/
 
 INSTANCE-DIRECTORY/
-node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
