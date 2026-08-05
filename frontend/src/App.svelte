@@ -61,14 +61,15 @@
 	<DepartureBoard {departures} {station} title={station} />
 {/each} -->
 
-<DepartureBoard {departures} station="Dürrlewang" line="U12" direction="R" title="U12 Dürrlewang" />
-<DepartureBoard
-	{departures}
-	station="Vaihingen"
-	line={['S1', 'S2', 'S3']}
-	direction="R"
-	title="S1/S2/S3 Vaihingen"
-/>
+<div class="boards-grid">
+	<DepartureBoard {departures} station="Dürrlewang" line="U12" title="U12 Dürrlewang" count={5} />
+	<DepartureBoard
+		{departures}
+		station="Hauptbahnhof (tief)"
+		line={['S1', 'S2', 'S3']}
+		title="S1/S2/S3 Hauptbahnhof"
+	/>
+</div>
 
 <style>
 	.status-banner {
@@ -78,5 +79,11 @@
 		margin-bottom: 1rem;
 		border-radius: 4px;
 		font-size: 1.1rem;
+	}
+
+	.boards-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+		gap: 2rem;
 	}
 </style>

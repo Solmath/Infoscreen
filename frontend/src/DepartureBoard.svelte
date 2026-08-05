@@ -7,9 +7,17 @@
 		line?: string | string[] | null;
 		direction?: string | null;
 		title?: string;
+		count?: number;
 	}
 
-	let { departures, station = null, line = null, direction = null, title = '' }: Props = $props();
+	let {
+		departures,
+		station = null,
+		line = null,
+		direction = null,
+		title = '',
+		count = Infinity
+	}: Props = $props();
 
 	let lines = $derived(line === null ? null : Array.isArray(line) ? line : [line]);
 
@@ -23,18 +31,26 @@
 	);
 </script>
 
-{#if title}<h2>{title}</h2>{/if}
-<ul class="departures-list">
-	{#each filtered as dep, i (i)}
-		<li class="departure-row">
-			<span class="line">{dep.line}</span>
-			<span class="destination">{dep.destination}</span>
-			<span class="minutes">{dep.minutes} min</span>
-		</li>
-	{/each}
-</ul>
+<div class="board">
+	{#if title}<h2>{title}</h2>{/if}
+	<ul class="departures-list">
+		{#each filtered.slice(0, count) as dep, i (i)}
+			<li class="departure-row">
+				<span class="line">{dep.line}</span>
+				<span class="destination">{dep.destination}</span>
+				<span class="minutes">{dep.minutes} min</span>
+			</li>
+		{/each}
+	</ul>
+</div>
 
 <style>
+	.board {
+		border: 1px solid #2a2f36;
+		border-radius: 8px;
+		padding: 1rem 1.5rem;
+	}
+
 	.departures-list {
 		list-style: none;
 		margin: 0;
@@ -48,6 +64,10 @@
 		padding: 1rem 0;
 		border-bottom: 1px solid #2a2f36;
 		font-size: 2rem;
+	}
+
+	.departure-row:last-child {
+		border-bottom: none;
 	}
 
 	.line {
