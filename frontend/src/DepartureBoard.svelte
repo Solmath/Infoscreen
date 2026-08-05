@@ -4,18 +4,20 @@
 	interface Props {
 		departures: Departure[];
 		station?: string | null;
-		line?: string | null;
+		line?: string | string[] | null;
 		direction?: string | null;
 		title?: string;
 	}
 
 	let { departures, station = null, line = null, direction = null, title = '' }: Props = $props();
 
+	let lines = $derived(line === null ? null : Array.isArray(line) ? line : [line]);
+
 	let filtered = $derived(
 		departures.filter(
 			(d) =>
 				(station === null || d.station === station) &&
-				(line === null || d.line === line) &&
+				(lines === null || lines.includes(d.line)) &&
 				(direction === null || d.direction === direction)
 		)
 	);
@@ -26,7 +28,7 @@
 	{#each filtered as dep, i (i)}
 		<li class="departure-row">
 			<span class="line">{dep.line}</span>
-			<span class="direction">{dep.direction}</span>
+			<span class="destination">{dep.destination}</span>
 			<span class="minutes">{dep.minutes} min</span>
 		</li>
 	{/each}
@@ -54,7 +56,7 @@
 		color: #ffcc00;
 	}
 
-	.direction {
+	.destination {
 		flex: 1;
 	}
 

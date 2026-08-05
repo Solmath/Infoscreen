@@ -57,9 +57,18 @@
 	<div class="status-banner">{statusMessage}</div>
 {/if}
 
-{#each stations as station (station)}
+<!-- {#each stations as station (station)}
 	<DepartureBoard {departures} {station} title={station} />
-{/each}
+{/each} -->
+
+<DepartureBoard {departures} station="Dürrlewang" line="U12" direction="R" title="U12 Dürrlewang" />
+<DepartureBoard
+	{departures}
+	station="Vaihingen"
+	line={['S1', 'S2', 'S3']}
+	direction="R"
+	title="S1/S2/S3 Vaihingen"
+/>
 
 <style>
 	.status-banner {
