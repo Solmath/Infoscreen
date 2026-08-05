@@ -12,10 +12,10 @@ CACHE_TTL_SECONDS = 30
 _cache = {}
 
 
-def _departure_ts(now, countdown):
+def _departure_ts(now, minutes):
     # absolute timestamp lets the client tick the countdown live between polls
     try:
-        return (now + timedelta(minutes=int(countdown))).isoformat()
+        return (now + timedelta(minutes=minutes)).isoformat()
     except TypeError, ValueError:
         return None
 
@@ -73,6 +73,7 @@ def _parse_departure_row(departure, now):
     servingLine = departure["servingLine"]
 
     dt = departure["dateTime"]
+    minutes = int(departure["countdown"])
     dateTime = f"{dt['hour']}:{str(dt['minute']).zfill(2)}"
 
     realTime = dateTime
@@ -95,38 +96,26 @@ def _parse_departure_row(departure, now):
                 realTime = f"{departure['realDateTime']['hour']}:{str(departure['realDateTime']['minute']).zfill(2)}"
 
     return {
-        "number": servingLine["number"],
+        "line": servingLine["number"],
         "destination": servingLine["direction"],
         "direction": servingLine["liErgRiProj"]["direction"],
         "dateTime": dateTime,
         "realTime": realTime,
         "delay": delay,
         "cancelled": cancelled,
-        "countdown": departure["countdown"],
-        "departureTs": _departure_ts(now, departure["countdown"]),
+        "minutes": minutes,
+        "departureTs": _departure_ts(now, minutes),
     }
 
 
 @departure_bp.route("/api/departures")
 def departures_api():
-    stations = current_app.config["EFA_STATIONS"]
-    station = request.args.get("station", stations[0])
-    if station not in stations:
-        abort(400, description=f"Unknown station: {station}")
+    station = request.args.get("station", current_app.config["EFA_STATIONS"][0])
 
     data, meta = get_departures(station=station)
     now = datetime.fromisoformat(meta["fetched_at"]) if meta["fetched_at"] else None
 
-    rows = [_parse_departure_row(d, now) for d in data.get("departureList", [])]
-    departures = [
-        {
-            "line": row["number"],
-            "destination": row["destination"],
-            "direction": row["direction"],
-            "minutes": int(row["countdown"]),
-        }
-        for row in rows
-    ]
+    departures = [_parse_departure_row(d, now) for d in data.get("departureList", [])]
 
     return jsonify({"departures": departures, "meta": meta, "server_time": time.time()})
 

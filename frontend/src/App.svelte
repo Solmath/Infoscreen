@@ -65,9 +65,19 @@
 	<DepartureBoard {departures} station="Dürrlewang" line="U12" title="U12 Dürrlewang" count={5} />
 	<DepartureBoard
 		{departures}
-		station="Hauptbahnhof (tief)"
+		station="Rohr"
 		line={['S1', 'S2', 'S3']}
-		title="S1/S2/S3 Hauptbahnhof"
+		title="S1/S2/S3 Rohr"
+    direction="H"
+    count={5}
+	/>
+	<DepartureBoard
+		{departures}
+		station="Vaihingen"
+		line={['S1', 'S2', 'S3']}
+		title="S1/S2/S3 Vaihingen"
+    direction="R"
+    count={5}
 	/>
 </div>
 

@@ -18,7 +18,7 @@
       endif
       %}
     >
-      <td>{{ row.number }}</td>
+      <td>{{ row.line }}</td>
       <td style="text-align: left">{{ row.destination }}</td>
       <td>
         {% if row.delay|int == 0 %} {{ row.dateTime }} {% else %}
@@ -30,7 +30,7 @@
         >
         {% endif %}
       </td>
-      <td{% if row.departureTs %} data-departure-ts="{{ row.departureTs }}"{% endif %}>{{ row.countdown }}</td>
+      <td{% if row.departureTs %} data-departure-ts="{{ row.departureTs }}" {% endif %}>{{ row.minutes }}</td>
     </tr>
     {% endfor %} {% else %}
     <tr>
