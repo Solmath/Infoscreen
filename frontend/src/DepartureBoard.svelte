@@ -8,6 +8,7 @@
 		direction?: string | null;
 		title?: string;
 		count?: number;
+		error?: string | null;
 	}
 
 	let {
@@ -16,7 +17,8 @@
 		line = null,
 		direction = null,
 		title = '',
-		count = Infinity
+		count = Infinity,
+		error = null
 	}: Props = $props();
 
 	let lines = $derived(line === null ? null : Array.isArray(line) ? line : [line]);
@@ -33,15 +35,19 @@
 
 <div class="board">
 	{#if title}<h2>{title}</h2>{/if}
-	<ul class="departures-list">
-		{#each filtered.slice(0, count) as dep, i (i)}
-			<li class="departure-row">
-				<span class="line">{dep.line}</span>
-				<span class="destination">{dep.destination}</span>
-				<span class="minutes">{dep.minutes} min</span>
-			</li>
-		{/each}
-	</ul>
+	{#if error}
+		<p class="board-error">{error}</p>
+	{:else}
+		<ul class="departures-list">
+			{#each filtered.slice(0, count) as dep, i (i)}
+				<li class="departure-row">
+					<span class="line">{dep.line}</span>
+					<span class="destination">{dep.destination}</span>
+					<span class="minutes">{dep.minutes} min</span>
+				</li>
+			{/each}
+		</ul>
+	{/if}
 </div>
 
 <style>
@@ -49,6 +55,7 @@
 		border: 1px solid #2a2f36;
 		border-radius: 8px;
 		padding: 1rem 1.5rem;
+    min-width: 500px;
 	}
 
 	.departures-list {
@@ -68,6 +75,11 @@
 
 	.departure-row:last-child {
 		border-bottom: none;
+	}
+
+	.board-error {
+		color: #ff6b6b;
+		margin: 0;
 	}
 
 	.line {

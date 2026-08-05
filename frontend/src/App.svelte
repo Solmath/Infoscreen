@@ -1,21 +1,38 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import type { Departure, DeparturesResponse, StationsResponse } from './lib/types';
+	import type { Departure, DeparturesResponse } from './lib/types';
 	import DepartureBoard from './DepartureBoard.svelte';
 
 	const POLL_INTERVAL_MS = 30_000;
 
-	let stations = $state<string[]>([]);
-	let departures = $state<Departure[]>([]);
-	let statusMessage = $state<string | null>(null); // null = hide the banner
-
-	async function fetchStations() {
-		const res = await fetch('/api/stations');
-		if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-		const data: StationsResponse = await res.json();
-		stations = data.stations;
+	interface BoardConfig {
+		station: string;
+		line?: string | string[];
+		direction?: string;
+		title?: string;
+		count?: number;
 	}
+
+	// Each board queries its own station directly -- stations no longer need to be
+	// pre-registered in EFA_STATIONS just to appear on screen.
+	const boards: BoardConfig[] = [
+		{ station: 'Dürrlewang', line: 'U12', title: 'U12 Dürrlewang', count: 5 },
+		{ station: 'Rohr', line: ['S1', 'S2', 'S3'], direction: 'H', title: 'S1/S2/S3 Rohr', count: 5 },
+		{
+			station: 'Vaihingen',
+			line: ['S1', 'S2', 'S3'],
+			direction: 'R',
+			title: 'S1/S2/S3 Vaihingen',
+			count: 5
+		},
+		{ station: 'foobar' }
+	];
+
+	const stations = [...new Set(boards.map((b) => b.station))];
+
+	let departures = $state<Departure[]>([]);
+	let stationErrors = $state<Record<string, string | null>>({});
+	let statusMessage = $state<string | null>(null); // null = hide the banner
 
 	async function fetchDepartures() {
 		try {
@@ -32,7 +49,10 @@
 			departures = results.flatMap(({ station, data }) =>
 				data.departures.map((dep) => ({ ...dep, station }))
 			);
-			statusMessage = results.some(({ data }) => data.meta.stale)
+			stationErrors = Object.fromEntries(
+				results.map(({ station, data }) => [station, data.meta.error])
+			);
+			statusMessage = results.some(({ data }) => data.meta.stale && !data.meta.error)
 				? 'Showing last known departures -- EFA is unreachable'
 				: null;
 		} catch (err) {
@@ -44,8 +64,7 @@
 
 	let intervalId: ReturnType<typeof setInterval> | undefined;
 
-	onMount(async () => {
-		await fetchStations();
+	onMount(() => {
 		fetchDepartures(); // first load, no need to wait for the interval
 		intervalId = setInterval(fetchDepartures, POLL_INTERVAL_MS);
 	});
@@ -57,28 +76,18 @@
 	<div class="status-banner">{statusMessage}</div>
 {/if}
 
-<!-- {#each stations as station (station)}
-	<DepartureBoard {departures} {station} title={station} />
-{/each} -->
-
 <div class="boards-grid">
-	<DepartureBoard {departures} station="Dürrlewang" line="U12" title="U12 Dürrlewang" count={5} />
-	<DepartureBoard
-		{departures}
-		station="Rohr"
-		line={['S1', 'S2', 'S3']}
-		title="S1/S2/S3 Rohr"
-    direction="H"
-    count={5}
-	/>
-	<DepartureBoard
-		{departures}
-		station="Vaihingen"
-		line={['S1', 'S2', 'S3']}
-		title="S1/S2/S3 Vaihingen"
-    direction="R"
-    count={5}
-	/>
+	{#each boards as board (board.title)}
+		<DepartureBoard
+			{departures}
+			station={board.station}
+			line={board.line}
+			direction={board.direction}
+			title={board.title}
+			count={board.count}
+			error={stationErrors[board.station] ?? null}
+		/>
+	{/each}
 </div>
 
 <style>
