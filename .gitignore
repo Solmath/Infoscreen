@@ -1,10 +1,10 @@
 .venv/
-.env
 
 *.pyc
 __pycache__/
 
 instance/
+boards.json
 
 .pytest_cache/
 .ruff_cache/
@@ -16,4 +16,13 @@ build/
 *.egg-info/
 
 INSTANCE-DIRECTORY/
-node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test

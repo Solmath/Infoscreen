@@ -1,3 +1,17 @@
+####################
+# FRONTEND BUILDER #
+####################
+
+FROM node:26-slim AS frontend-builder
+
+WORKDIR /frontend
+
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci
+
+COPY frontend ./
+RUN npm run build
+
 ###########
 # BUILDER #
 ###########
@@ -16,7 +30,10 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-install-project --no-dev
 
 COPY src ./src
+# The Svelte app is bundled as package data, served by Flask at static_url_path="".
+COPY --from=frontend-builder /frontend/dist ./src/infoscreen/static
 RUN uv sync --frozen --no-dev --no-editable
+
 
 #########
 # FINAL #
@@ -29,6 +46,9 @@ RUN addgroup --system app && adduser --system --group app
 ENV HOME=/home/app
 WORKDIR /app
 ENV PATH="/app/.venv/bin:$PATH"
+# Runtime config (e.g. boards.json) lives here, outside the image -- mount a
+# volume at this path to change it without rebuilding.
+ENV INSTANCE_PATH=/app/instance
 
 COPY --from=builder /app/.venv ./.venv
 
@@ -40,4 +60,4 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/healthz')" || exit 1
 
-CMD ["waitress-serve", "--listen=0.0.0.0:8080", "--call", "infoscreen:create_app"]
+CMD ["waitress-serve", "--listen=0.0.0.0:8080", "--call", "infoscreen.app:create_app"]
