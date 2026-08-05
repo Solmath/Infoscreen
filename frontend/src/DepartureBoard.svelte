@@ -55,7 +55,6 @@
 		border: 1px solid #2a2f36;
 		border-radius: 8px;
 		padding: 1rem 1.5rem;
-    min-width: 500px;
 	}
 
 	.departures-list {

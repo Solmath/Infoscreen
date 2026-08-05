@@ -10,6 +10,17 @@ class EFAError(RuntimeError):
     """Raised when the upstream EFA API cannot be reached or returns unusable data."""
 
 
+def _dm_error(dm):
+    # EFA reports an unresolved stop name via dm.message entries instead of an HTTP error.
+    messages = dm.get("message") or []
+    if isinstance(messages, dict):
+        messages = [messages]
+    for message in messages:
+        if message.get("name") == "error":
+            return message.get("value")
+    return None
+
+
 class EFA:
     def __init__(self, url, timeout=5.0, cache_ttl=30.0, proximity_search=False):
         self.dm_url = url + "/XML_DM_REQUEST"
@@ -45,5 +56,9 @@ class EFA:
             departures = json.loads(response.text)
         except json.JSONDecodeError as exc:
             raise EFAError(f"EFA returned invalid JSON from {self.dm_url}") from exc
+
+        error = _dm_error(departures.get("dm", {}))
+        if error:
+            raise EFAError(f"EFA rejected stop {name!r}: {error}")
 
         return departures

@@ -88,3 +88,27 @@ def test_get_departures_raises_efa_error_on_invalid_json():
 
     with pytest.raises(EFAError):
         efa.get_departures("TestCity", "Central", datetime(2026, 1, 1, 12, 0))
+
+
+@respx.mock
+def test_get_departures_raises_efa_error_on_unresolved_stop():
+    respx.post(f"{EFA_URL}/XML_DM_REQUEST").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "dm": {
+                    "message": [
+                        {"name": "code", "value": "-2000"},
+                        {"name": "error", "value": "stop invalid"},
+                    ],
+                    "points": None,
+                },
+                "departureList": None,
+            },
+        )
+    )
+
+    efa = EFA(EFA_URL, cache_ttl=0)
+
+    with pytest.raises(EFAError, match="stop invalid"):
+        efa.get_departures("TestCity", "NoSuchStop", datetime(2026, 1, 1, 12, 0))

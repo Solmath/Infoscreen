@@ -115,7 +115,7 @@ def departures_api():
     data, meta = get_departures(station=station)
     now = datetime.fromisoformat(meta["fetched_at"]) if meta["fetched_at"] else None
 
-    departures = [_parse_departure_row(d, now) for d in data.get("departureList", [])]
+    departures = [_parse_departure_row(d, now) for d in data.get("departureList") or []]
 
     return jsonify({"departures": departures, "meta": meta, "server_time": time.time()})
 
@@ -130,7 +130,7 @@ def departure_table():
     departures, meta = get_departures(station=station)
     now = datetime.fromisoformat(meta["fetched_at"]) if meta["fetched_at"] else None
 
-    rows = [_parse_departure_row(d, now) for d in departures.get("departureList", [])]
+    rows = [_parse_departure_row(d, now) for d in departures.get("departureList") or []]
     rowsR = [row for row in rows if row["direction"] == "R"]
     rowsH = [row for row in rows if row["direction"] == "H"]
 

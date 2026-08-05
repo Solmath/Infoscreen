@@ -16,13 +16,13 @@
 	// Each board queries its own station directly -- stations no longer need to be
 	// pre-registered in EFA_STATIONS just to appear on screen.
 	const boards: BoardConfig[] = [
-		{ station: 'Dürrlewang', line: 'U12', title: 'U12 Dürrlewang', count: 5 },
-		{ station: 'Rohr', line: ['S1', 'S2', 'S3'], direction: 'H', title: 'S1/S2/S3 Rohr', count: 5 },
+		{ station: 'Dürrlewang', line: 'U12', title: 'Dürrlewang', count: 5 },
+		{ station: 'Rohr', line: ['S1', 'S2', 'S3'], direction: 'H', title: 'Rohr', count: 5 },
 		{
 			station: 'Vaihingen',
 			line: ['S1', 'S2', 'S3'],
 			direction: 'R',
-			title: 'S1/S2/S3 Vaihingen',
+			title: 'Vaihingen',
 			count: 5
 		},
 		{ station: 'foobar' }
@@ -102,7 +102,7 @@
 
 	.boards-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
 		gap: 2rem;
 	}
 </style>
