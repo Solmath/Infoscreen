@@ -1,6 +1,6 @@
 [project]
 name = "infoscreen"
-version = "0.1.0"
+version = "0.2.0"
 description = "Self-hosted departure board for EFA-based public transport APIs"
 requires-python = ">= 3.14,<4.0"
 dependencies = [
