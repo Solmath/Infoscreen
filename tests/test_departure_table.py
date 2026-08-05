@@ -1,5 +1,10 @@
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
+
 import httpx
 import respx
+
+from infoscreen import departure as departure_module
 
 EFA_DM_URL = "https://example.invalid/efa/XML_DM_REQUEST"
 
@@ -64,3 +69,43 @@ def test_departure_page_passes_stations_to_alpine_component(client):
     assert resp.status_code == 200
     assert b'["Central", "North"]' in resp.data
     assert b"alpine.min.js" in resp.data
+
+
+class _FakeDateTime(datetime):
+    """Stand-in for departure.datetime with a controllable now()."""
+
+    current = datetime(2026, 1, 1, 12, 0, tzinfo=ZoneInfo("Europe/Berlin"))
+
+    @classmethod
+    def now(cls, tz=None):
+        return cls.current
+
+
+@respx.mock
+def test_departures_are_cached_within_ttl(client, monkeypatch):
+    route = respx.post(EFA_DM_URL).mock(
+        return_value=httpx.Response(200, json={"departureList": []})
+    )
+    monkeypatch.setattr(departure_module, "datetime", _FakeDateTime)
+
+    client.get("/departure_table")
+    client.get("/departure_table")
+
+    assert route.calls.call_count == 1
+
+
+@respx.mock
+def test_departures_refetch_after_ttl_expires(client, monkeypatch):
+    route = respx.post(EFA_DM_URL).mock(
+        return_value=httpx.Response(200, json={"departureList": []})
+    )
+    monkeypatch.setattr(departure_module, "datetime", _FakeDateTime)
+    _FakeDateTime.current = datetime(
+        2026, 1, 1, 12, 0, tzinfo=ZoneInfo("Europe/Berlin")
+    )
+
+    client.get("/departure_table")
+    _FakeDateTime.current += timedelta(seconds=31)
+    client.get("/departure_table")
+
+    assert route.calls.call_count == 2

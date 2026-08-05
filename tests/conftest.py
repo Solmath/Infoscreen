@@ -1,7 +1,14 @@
 import pytest
 
-import infoscreen.efa
 from infoscreen import create_app
+from infoscreen import departure as departure_module
+
+
+@pytest.fixture(autouse=True)
+def clear_departure_cache():
+    departure_module._cache.clear()
+    yield
+    departure_module._cache.clear()
 
 
 @pytest.fixture
@@ -14,18 +21,8 @@ def app():
             "EFA_STATIONS": ["Central", "North"],
             "EFA_TIMEZONE": "Europe/Berlin",
             "EFA_TIMEOUT": 5.0,
-            "EFA_CACHE_TTL": 30.0,
         }
     )
-
-
-@pytest.fixture(autouse=True)
-def _clear_efa_cache():
-    # The TTL cache is module-level (shared across requests by design);
-    # reset it between tests so they don't leak state into each other.
-    infoscreen.efa._cache.clear()
-    yield
-    infoscreen.efa._cache.clear()
 
 
 @pytest.fixture
