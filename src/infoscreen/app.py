@@ -1,12 +1,20 @@
 import os
 from contextlib import suppress
+from pathlib import Path
 
 from flask import Flask, redirect, url_for
 
 from . import config
+from .departure import departure_bp
 
 
 def create_app(test_config=None):
+
+    # frontend/dist gets copied here during the Docker build (see Dockerfile)
+    STATIC_DIR = Path(__file__).parent / "static"
+
+    app = Flask(__name__, static_folder=str(STATIC_DIR), static_url_path="")
+
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
 
@@ -35,8 +43,6 @@ def create_app(test_config=None):
     def healthz():
         return "ok"
 
-    from . import departure
-
-    app.register_blueprint(departure.departure_bp)
+    app.register_blueprint(departure_bp)
 
     return app

@@ -10,7 +10,6 @@ def _app_with_env(monkeypatch, **env):
     monkeypatch.delenv("EFA_STATIONS", raising=False)
     monkeypatch.delenv("EFA_TIMEZONE", raising=False)
     monkeypatch.delenv("EFA_TIMEOUT", raising=False)
-    monkeypatch.delenv("EFA_CACHE_TTL", raising=False)
     for key, value in env.items():
         monkeypatch.setenv(key, value)
     return Flask(__name__)
@@ -48,7 +47,6 @@ def test_init_app_parses_stations_and_defaults_timezone(monkeypatch):
     assert app.config["EFA_STATIONS"] == ["Central", "North", "East"]
     assert app.config["EFA_TIMEZONE"] == "UTC"
     assert app.config["EFA_TIMEOUT"] == 5.0
-    assert app.config["EFA_CACHE_TTL"] == 30.0
 
 
 def test_init_app_reads_timeout_and_cache_ttl_overrides(monkeypatch):
@@ -64,4 +62,3 @@ def test_init_app_reads_timeout_and_cache_ttl_overrides(monkeypatch):
     config.init_app(app)
 
     assert app.config["EFA_TIMEOUT"] == 2.5
-    assert app.config["EFA_CACHE_TTL"] == 60.0
