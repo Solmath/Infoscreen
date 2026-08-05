@@ -1,5 +1,7 @@
+import json
 import time
 from datetime import datetime, timedelta
+from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from flask import Blueprint, abort, current_app, jsonify, render_template, request
@@ -67,6 +69,23 @@ def departure():
 @departure_bp.route("/api/stations")
 def stations_api():
     return jsonify({"stations": current_app.config["EFA_STATIONS"]})
+
+
+def _load_boards_config():
+    # Read fresh on every request so the file can be edited/mounted without a restart.
+    path = Path(current_app.instance_path) / "boards.json"
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return []
+    except OSError, json.JSONDecodeError:
+        current_app.logger.exception("Failed to read boards config from %s", path)
+        return []
+
+
+@departure_bp.route("/api/boards")
+def boards_api():
+    return jsonify({"boards": _load_boards_config()})
 
 
 def _parse_departure_row(departure, now):

@@ -184,6 +184,37 @@ def test_stations_api_returns_configured_stations(client):
     assert resp.get_json() == {"stations": ["Central", "North"]}
 
 
+def test_boards_api_returns_empty_list_when_config_missing(client):
+    resp = client.get("/api/boards")
+
+    assert resp.status_code == 200
+    assert resp.get_json() == {"boards": []}
+
+
+def test_boards_api_returns_boards_from_instance_config(
+    client, app, tmp_path, monkeypatch
+):
+    monkeypatch.setattr(app, "instance_path", str(tmp_path))
+    (tmp_path / "boards.json").write_text('[{"station": "Central"}]', encoding="utf-8")
+
+    resp = client.get("/api/boards")
+
+    assert resp.status_code == 200
+    assert resp.get_json() == {"boards": [{"station": "Central"}]}
+
+
+def test_boards_api_returns_empty_list_on_invalid_json(
+    client, app, tmp_path, monkeypatch
+):
+    monkeypatch.setattr(app, "instance_path", str(tmp_path))
+    (tmp_path / "boards.json").write_text("not json", encoding="utf-8")
+
+    resp = client.get("/api/boards")
+
+    assert resp.status_code == 200
+    assert resp.get_json() == {"boards": []}
+
+
 class _FakeDateTime(datetime):
     """Stand-in for departure.datetime with a controllable now()."""
 

@@ -1,40 +1,27 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import type { Departure, DeparturesResponse } from './lib/types';
+	import type { BoardConfig, Departure, DeparturesResponse } from './lib/types';
 	import DepartureBoard from './DepartureBoard.svelte';
 
 	const POLL_INTERVAL_MS = 30_000;
 
-	interface BoardConfig {
-		station: string;
-		line?: string | string[];
-		direction?: string;
-		title?: string;
-		count?: number;
-	}
-
-	// Each board queries its own station directly -- stations no longer need to be
-	// pre-registered in EFA_STATIONS just to appear on screen.
-	const boards: BoardConfig[] = [
-		{ station: 'Dürrlewang', line: 'U12', title: 'Dürrlewang', count: 5 },
-		{ station: 'Rohr', line: ['S1', 'S2', 'S3'], direction: 'H', title: 'Rohr', count: 5 },
-		{
-			station: 'Vaihingen',
-			line: ['S1', 'S2', 'S3'],
-			direction: 'R',
-			title: 'Vaihingen',
-			count: 5
-		},
-		{ station: 'foobar' }
-	];
-
-	const stations = [...new Set(boards.map((b) => b.station))];
-
+	let boards = $state<BoardConfig[]>([]);
 	let departures = $state<Departure[]>([]);
 	let stationErrors = $state<Record<string, string | null>>({});
 	let statusMessage = $state<string | null>(null); // null = hide the banner
 
+	async function fetchBoards() {
+		const res = await fetch('/api/boards');
+		if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+		const data: { boards: BoardConfig[] } = await res.json();
+		boards = data.boards;
+	}
+
 	async function fetchDepartures() {
+		const stations = [...new Set(boards.map((b) => b.station))];
+		if (stations.length === 0) return;
+
 		try {
 			const results = await Promise.all(
 				stations.map(async (station) => {
@@ -64,7 +51,8 @@
 
 	let intervalId: ReturnType<typeof setInterval> | undefined;
 
-	onMount(() => {
+	onMount(async () => {
+		await fetchBoards();
 		fetchDepartures(); // first load, no need to wait for the interval
 		intervalId = setInterval(fetchDepartures, POLL_INTERVAL_MS);
 	});
@@ -77,7 +65,7 @@
 {/if}
 
 <div class="boards-grid">
-	{#each boards as board (board.title)}
+	{#each boards as board (board.title ?? board.station)}
 		<DepartureBoard
 			{departures}
 			station={board.station}

@@ -34,6 +34,19 @@ All configuration is via environment variables (see [.env.example](.env.example)
 
 The app fails fast at startup if a required variable is missing.
 
+### Board layout
+
+Which boards to show (station, line/direction filters, title) is read at runtime from
+a `boards.json` file in the Flask [instance folder](https://flask.palletsprojects.com/en/stable/config/#instance-folders),
+not baked into the image -- see [boards.example.json](boards.example.json) for the format.
+
+- Local (no Docker): copy it to `src/instance/boards.json`.
+- Docker: copy it to `./instance/boards.json`; `docker-compose.yml` mounts that folder
+  read-only into the container (`INSTANCE_PATH=/app/instance`).
+
+The file is re-read on every request, so it can be edited without restarting the app.
+If it's missing or invalid, boards.json simply returns no boards.
+
 ## Installation (local, without Docker)
 
 ```bash
@@ -41,8 +54,9 @@ git clone https://github.com/Solmath/Infoscreen.git
 cd Infoscreen
 uv sync
 cp .env.example .env   # git-ignored; fill in your EFA_URL / EFA_PLACE / EFA_STATIONS
+cp boards.example.json src/instance/boards.json   # git-ignored; list your boards
 set -a; source .env; set +a
-uv run flask --app infoscreen run --debug
+uv run flask --app infoscreen.app run --debug
 ```
 
 ## Docker
@@ -63,7 +77,9 @@ docker compose down            # stop
 ```
 
 `docker-compose.yml` reads a git-ignored `.env` file. Run `cp .env.example .env`
-and fill it in with your real transit operator's values first.
+and fill it in with your real transit operator's values first. Also copy
+`boards.example.json` to `./instance/boards.json` to define your boards (see
+[Board layout](#board-layout)).
 
 Then open `http://localhost:8080/` in a browser — it redirects to the departure board.
 The container exposes a `/healthz` liveness endpoint used by its Docker `HEALTHCHECK`.

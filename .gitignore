@@ -4,6 +4,7 @@
 __pycache__/
 
 instance/
+boards.json
 
 .pytest_cache/
 .ruff_cache/

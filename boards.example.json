@@ -1,0 +1,4 @@
+[
+  { "station": "Central", "line": "U1", "title": "Central", "count": 5 },
+  { "station": "North", "line": ["S1", "S2"], "direction": "H", "title": "North", "count": 5 }
+]
