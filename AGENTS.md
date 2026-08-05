@@ -38,9 +38,11 @@ Dockerfile           # multi-stage uv build; NO CMD (compose supplies the run co
   place, station names, timezone) come from environment variables via `config.py`,
   never from source. This includes test fixtures — use generic placeholders
   (`TestCity`, `Central`, `North`, `example.invalid`), not real operator/station names.
-- `efa.py`'s HTTP client and cache are module-level singletons — keep request payloads
-  built fresh per call (no shared mutable state between requests). Tests must clear
-  `infoscreen.efa._cache` between runs (see `tests/conftest.py`'s autouse fixture).
+- `efa_client.py`'s HTTP client is a module-level singleton — keep request payloads
+  built fresh per call (no shared mutable state between requests). Response caching
+  lives in `departure.py`'s per-station `_cache` dict, not in `efa_client.py`. Tests
+  must clear `infoscreen.departure._cache` between runs (see `tests/conftest.py`'s
+  autouse fixture).
 - Station input from users is validated against the `EFA_STATIONS` allowlist
   (invalid station → 400), and upstream EFA failures are caught (`EFAError`) and
   rendered as a graceful fallback page, never a 500.
