@@ -1,14 +1,9 @@
 import json
-import time
 
 import httpx
 
 # Reused across requests: avoids a new TLS handshake + connection per call.
 _client = httpx.Client()
-
-# Module-level so the TTL cache is shared across all EFA instances/requests
-# in this process, instead of one upstream call per client poll.
-_cache = {}
 
 
 class EFAError(RuntimeError):
@@ -20,17 +15,8 @@ class EFA:
         self.dm_url = url + "/XML_DM_REQUEST"
         self.proximity_search = proximity_search
         self.timeout = timeout
-        self.cache_ttl = cache_ttl
 
     def get_departures(self, place, name, ts):
-        cache_key = (self.dm_url, place, name)
-        cached = _cache.get(cache_key)
-        if cached is not None:
-            expires_at, departures = cached
-            if expires_at > time.monotonic():
-                return departures
-            del _cache[cache_key]
-
         post_data = {
             "language": "de",
             "mode": "direct",
@@ -60,5 +46,4 @@ class EFA:
         except json.JSONDecodeError as exc:
             raise EFAError(f"EFA returned invalid JSON from {self.dm_url}") from exc
 
-        _cache[cache_key] = (time.monotonic() + self.cache_ttl, departures)
         return departures
