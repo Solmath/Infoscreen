@@ -4,6 +4,8 @@ import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
 
 export default defineConfig({
+	// Served by Flask at static_url_path="" (see src/infoscreen/app.py), so
+	// root-relative asset URLs work the same in dev and in the built app.
 	plugins: [
 		svelte({
 			compilerOptions: {
