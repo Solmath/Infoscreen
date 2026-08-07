@@ -26,10 +26,10 @@ ENV PYTHONUNBUFFERED=1
 ENV UV_LINK_MODE=copy
 ENV UV_PYTHON_DOWNLOADS=never
 
-COPY pyproject.toml uv.lock ./
+COPY backend/pyproject.toml backend/uv.lock ./
 RUN uv sync --frozen --no-install-project --no-dev
 
-COPY src ./src
+COPY backend/src ./src
 # The Svelte app is bundled as package data, served by Flask at static_url_path="".
 COPY --from=frontend-builder /frontend/dist ./src/infoscreen/static
 RUN uv sync --frozen --no-dev --no-editable
