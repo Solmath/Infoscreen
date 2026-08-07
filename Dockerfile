@@ -16,7 +16,7 @@ RUN npm run build
 # BUILDER #
 ###########
 
-FROM python:3.14.6-slim-bookworm AS builder
+FROM python:3.15.0b3-slim-bookworm AS builder
 COPY --from=ghcr.io/astral-sh/uv:0.12.1 /uv /usr/local/bin/uv
 
 WORKDIR /app
@@ -39,7 +39,7 @@ RUN uv sync --frozen --no-dev --no-editable
 # FINAL #
 #########
 
-FROM python:3.14.6-slim-bookworm
+FROM python:3.15.0b3-slim-bookworm
 
 RUN addgroup --system app && adduser --system --group app
 
