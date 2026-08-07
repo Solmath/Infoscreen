@@ -3,7 +3,8 @@ from zoneinfo import ZoneInfo
 
 import httpx
 import respx
-from backend.src.infoscreen import departure as departure_module
+
+from infoscreen import departure as departure_module
 
 EFA_DM_URL = "https://example.invalid/efa/XML_DM_REQUEST"
 
