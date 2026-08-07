@@ -1,7 +1,6 @@
 import pytest
+from backend.src.infoscreen import config
 from flask import Flask
-
-from infoscreen import config
 
 
 def _app_with_env(monkeypatch, **env):

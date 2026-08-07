@@ -1,7 +1,6 @@
 import pytest
-
-from infoscreen import departure as departure_module
-from infoscreen.app import create_app
+from backend.src.infoscreen import departure as departure_module
+from backend.src.infoscreen.app import create_app
 
 
 @pytest.fixture(autouse=True)

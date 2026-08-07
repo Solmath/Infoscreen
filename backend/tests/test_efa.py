@@ -3,8 +3,7 @@ from datetime import datetime
 import httpx
 import pytest
 import respx
-
-from infoscreen.efa_client import EFA, EFAError
+from backend.src.infoscreen.efa_client import EFA, EFAError
 
 EFA_URL = "https://example.invalid/efa"
 
