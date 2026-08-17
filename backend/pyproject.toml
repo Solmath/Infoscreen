@@ -5,14 +5,19 @@ description = "Self-hosted departure board for EFA-based public transport APIs"
 requires-python = ">= 3.14,<4.0"
 dependencies = [
     "flask (>=3.1.0,<4.0.0)",
-    "httpx>=0.28.1",
-    "python-dotenv>=1.2.2",
+    "httpx(>=0.28.1,<0.29)",
+    "python-dotenv(>=1.2.2,<2.0.0)",
     "tzdata>=2026.3",
-    "waitress>=3.0.2",
+    "waitress(>=3.0.2,<4.0.0)",
 ]
 
 [dependency-groups]
-dev = ["ruff", "pre-commit", "pytest", "respx"]
+dev = [
+    "prek>=0.4.14",
+    "pytest>=9.1.1",
+    "respx>=0.23.1",
+    "ruff>=0.16.3",
+]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
